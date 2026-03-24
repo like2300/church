@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}D'avant Croissance{% endblock %}</title>
+    {% load static %}
+
+    <!-- Tailwind CSS CDN -->
+    <script src="{% static 'js/tailwindcss.js' %}"></script>
+
+    <!-- Font Awesome Local -->
+    <link rel="stylesheet" href="{% static 'vendor/font-awesome/css/all.min.css' %}">
+
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        dark: '#0f172a',
+                        sidebar: '#050a18',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --dark-sidebar: #050a18;
+        }
+        /*body { background-color: #0f172a; color: #f1f5f9; }*/
+
+        /* Sidebar avec l'image en fond subtil */
+        .sidebar-bg {
+            background: url('{% static 'images/bg.jpg' %}') no-repeat center center/cover;
+        }
+
+        .nav-link {
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            background: rgba(59, 130, 246, 0.1);
+            border-left-color: var(--primary);
+            color: white;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+
+        @media (max-width: 1024px) {
+            .sidebar { transform: translateX(-100%); transition: transform 0.3s ease-in-out; }
+            .sidebar.open { transform: translateX(0); }
+        }
+    </style>
+</head>
+<body class="h-full overflow-hidden">
+
+    <div class="flex h-full">
+        <aside id="sidebar" class="sidebar fixed inset-y-0 left-0 z-50 w-80 sidebar-bg border-r border-white/10 lg:static lg:block">
+            <div class="flex flex-col h-full">
+                <div class="p-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
+                            <span class="text-white font-bold text-xl">D</span>
+                        </div>
+                        <div>
+                            <h1 class="text-white font-black tracking-tighter leading-none">D'AVANT</h1>
+                            <span class="text-blue-400 text-xs font-bold tracking-widest uppercase">Croissance</span>
+                        </div>
+                    </div>
+                </div>
+
+                <nav class="flex-1 px-4 space-y-2 mt-4 overflow-y-auto">
+                    <!-- Dashboard - ADMIN seulement -->
+                    {% if user.profile.role == 'ADMIN_CHURCH' %}
+                    <a href="{% url 'home' %}" class="nav-link flex items-center p-3 text-gray-100 rounded-lg group {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                        <i class="fas fa-th-large w-6"></i>
+                        <span class="ml-3 font-medium">Tableau de bord</span>
+                    </a>
+                    {% endif %}
+                    
+                    <!-- Membres - Tous -->
+                    <a href="{% url 'member_list' %}" class="nav-link flex items-center p-3 text-gray-100 rounded-lg group {% if 'member' in request.resolver_match.url_name %}active{% endif %}">
+                        <i class="fas fa-users w-6"></i>
+                        <span class="ml-3 font-medium">Membres</span>
+                    </a>
+                    
+                    <!-- Présences - Tous -->
+                    <a href="{% url 'attendance_create' %}" class="nav-link flex items-center p-3 text-gray-100 rounded-lg group {% if 'attendance' in request.resolver_match.url_name %}active{% endif %}">
+                        <i class="fas fa-calendar-check w-6"></i>
+                        <span class="ml-3 font-medium">Présences</span>
+                    </a>
+
+                    <!-- Cultes - ADMIN seulement -->
+                    {% if user.profile.role == 'ADMIN_CHURCH' %}
+                    <a href="{% url 'culte_session_list' %}" class="nav-link flex items-center p-3 text-gray-100 rounded-lg group {% if 'culte_session' in request.resolver_match.url_name %}active{% endif %}">
+                        <i class="fas fa-church w-6"></i>
+                        <span class="ml-3 font-medium">Cultes</span>
+                    </a>
+                    {% endif %}
+
+                    <!-- Alertes - ADMIN seulement -->
+                    {% if user.profile.role == 'ADMIN_CHURCH' %}
+                    <a href="{% url 'alerts_list' %}" class="nav-link flex items-center p-3 text-gray-100 rounded-lg group {% if 'alerts' in request.resolver_match.url_name %}active{% endif %}">
+                        <i class="fas fa-bell w-6"></i>
+                        <span class="ml-3 font-medium">Alertes</span>
+                        {% if alert_count > 0 %}
+                        <span class="ml-auto bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full">{{ alert_count }}</span>
+                        {% endif %}
+                    </a>
+
+                    <!-- Statistiques - ADMIN seulement -->
+                    <a href="{% url 'statistics' %}" class="nav-link flex items-center p-3 text-gray-100 rounded-lg group {% if 'statistics' in request.resolver_match.url_name %}active{% endif %}">
+                        <i class="fas fa-chart-bar w-6"></i>
+                        <span class="ml-3 font-medium">Statistiques</span>
+                    </a>
+                    {% endif %}
+                </nav>
+
+                <div class="p-4 border-t border-white/5">
+                    <a href="{% url 'logout' %}" class="flex items-center p-3 w-full bg-red-600/20 text-red-400 rounded-xl hover:bg-red-600 hover:text-white transition group">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span class="ml-3 font-bold text-sm">DÉCONNEXION</span>
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+            <header class="backdrop-blur-md bg-white/80 border-b border-gray-200 h-16 flex items-center justify-between px-4 lg:px-8">
+                <button id="mobile-menu-button" class="lg:hidden text-gray-500 hover:text-gray-700 focus:outline-none p-2">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+
+                <!-- République du Congo - Desktop -->
+                <div class="hidden lg:flex items-center gap-3 flex-1 px-4">
+                    <div class="w-8 h-8 bg-gradient-to-br from-blue-600 to-blue-400 rounded-lg flex items-center justify-center shadow-md shadow-blue-500/20">
+                        <i class="fas fa-flag text-white text-xs"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-bold text-gray-800">République du Congo</h2>
+                        <p class="text-[9px] text-gray-500 uppercase tracking-wider">Unité • Travail • Progrès</p>
+                    </div>
+                </div>
+
+                <!-- Mobile Title -->
+                <div class="lg:hidden flex items-center gap-2">
+                    <div class="w-7 h-7 bg-gradient-to-br from-blue-600 to-blue-400 rounded-lg flex items-center justify-center shadow-md">
+                        <i class="fas fa-flag text-white text-[10px]"></i>
+                    </div>
+                    <span class="text-sm font-bold text-gray-800">Congo</span>
+                </div>
+
+                <!-- User Menu -->
+                <div class="flex items-center gap-2 lg:gap-4">
+                    <!-- Badge du rôle - Desktop -->
+                    <div class="hidden md:inline-flex">
+                        {% if user.profile.role == 'ADMIN_CHURCH' %}
+                        <span class="px-3 py-1.5 text-[9px] font-bold uppercase rounded-full bg-purple-500/10 text-purple-600 border border-purple-500/20 flex items-center gap-1.5">
+                            <i class="fas fa-crown"></i>
+                            <span>Admin</span>
+                        </span>
+                        {% else %}
+                        <span class="px-3 py-1.5 text-[9px] font-bold uppercase rounded-full bg-green-500/10 text-green-600 border border-green-500/20 flex items-center gap-1.5">
+                            <i class="fas fa-user"></i>
+                            <span>Agent</span>
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Badge du rôle - Mobile -->
+                    <div class="md:hidden">
+                        {% if user.profile.role == 'ADMIN_CHURCH' %}
+                        <span class="px-2 py-1 text-[8px] font-bold uppercase rounded-full bg-purple-500/10 text-purple-600 border border-purple-500/20">
+                            <i class="fas fa-crown"></i>
+                        </span>
+                        {% else %}
+                        <span class="px-2 py-1 text-[8px] font-bold uppercase rounded-full bg-green-500/10 text-green-600 border border-green-500/20">
+                            <i class="fas fa-user"></i>
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <!-- User Info - Desktop -->
+                    <div class="hidden sm:flex items-center gap-3 pl-4 border-l border-gray-200">
+                        <div class="text-right">
+                            <p class="text-sm font-bold text-gray-800">{{ user.username }}</p>
+                            <p class="text-[9px] text-green-600 uppercase font-semibold flex items-center gap-1 justify-end">
+                                <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                                Connecté
+                            </p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-600 to-blue-400 border-2 border-white shadow-md shadow-blue-500/20 flex items-center justify-center cursor-pointer hover:scale-105 transition-transform">
+                            <i class="fas fa-user text-white text-sm"></i>
+                        </div>
+                    </div>
+
+                    <!-- User Info - Mobile -->
+                    <div class="sm:hidden flex items-center gap-2">
+                        <div class="text-right hidden xs:block">
+                            <p class="text-xs font-bold text-gray-800">{{ user.username }}</p>
+                        </div>
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-blue-400 border-2 border-white shadow-md flex items-center justify-center">
+                            <i class="fas fa-user text-white text-xs"></i>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="flex-1 overflow-y-auto p-6 lg:p-10">
+                <div class="max-w-7xl mx-auto">
+                    {% block content %}{% endblock %}
+                </div>
+            </main>
+
+            <footer class="bg-white border-t border-white/5 py-4 px-10 text-center">
+                <p class="text-xs text-gray-500 font-medium">
+                    © 2026 <span class="text-blue-500">D'avant Croissance</span> • Systèmes de Gestion Intelligents
+                </p>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Toast Messages Container -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2">
+        {% if messages %}
+            {% for message in messages %}
+            <div class="toast-message flex items-center p-4 rounded-lg shadow-lg transform transition-all duration-300 translate-x-full opacity-0 {% if message.tags == 'success' %}bg-green-500{% elif message.tags == 'error' %}bg-red-500{% elif message.tags == 'warning' %}bg-yellow-500{% else %}bg-blue-500{% endif %} text-white">
+                <span class="mr-2">
+                    {% if message.tags == 'success' %}✅
+                    {% elif message.tags == 'error' %}❌
+                    {% elif message.tags == 'warning' %}⚠️
+                    {% else %}ℹ️{% endif %}
+                </span>
+                <span class="font-medium text-sm">{{ message }}</span>
+            </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <script>
+        const btn = document.getElementById('mobile-menu-button');
+        const sidebar = document.getElementById('sidebar');
+
+        btn.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+
+        // Fermer la sidebar si on clique en dehors (sur mobile)
+        document.addEventListener('click', (e) => {
+            if (!sidebar.contains(e.target) && !btn.contains(e.target) && window.innerWidth < 1024) {
+                sidebar.classList.remove('open');
+            }
+        });
+
+        // Toast messages animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const toasts = document.querySelectorAll('.toast-message');
+            toasts.forEach((toast, index) => {
+                setTimeout(() => {
+                    toast.classList.remove('translate-x-full', 'opacity-0');
+                    setTimeout(() => {
+                        setTimeout(() => {
+                            toast.classList.add('opacity-0', 'translate-x-full');
+                            setTimeout(() => toast.remove(), 300);
+                        }, 4000);
+                    }, 300);
+                }, index * 100);
+            });
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

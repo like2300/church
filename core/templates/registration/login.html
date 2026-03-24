@@ -1,0 +1,518 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D'avant Croissance - Connexion</title>
+    <link rel="stylesheet" href="{% static 'leaflet/leaflet.css' %}" />
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --dark-blue: #1e40af;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --radius: 12px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body, html { height: 100%; font-family: 'Segoe UI', system-ui, sans-serif; background: #050a18; color: white; overflow: hidden; }
+
+        .login-container { display: flex; height: 100vh; width: 100vw; }
+
+        @media (max-width: 900px) {
+            body, html { overflow: auto; }
+            .login-container { flex-direction: column; height: auto; }
+            #map-section { width: 100% !important; height: 350px !important; order: 1; }
+            .login-form-section { width: 100% !important; min-height: 100vh; order: 2; padding: 20px !important; }
+        }
+
+        .login-form-section {
+            width: 40%;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: linear-gradient(rgba(5, 10, 24, 0.4), rgba(5, 10, 24, 0.7)),
+                        url('{% static 'images/bg.jpg' %}') no-repeat center center/cover;
+            z-index: 10;
+        }
+
+        .logo-container { text-align: left; margin-bottom: 40px; border-left: 4px solid var(--primary); padding-left: 20px; }
+        .logo { font-size: 32px; font-weight: 900; letter-spacing: 2px; color: white; }
+        .app-name { font-size: 18px; font-weight: 400; color: var(--primary); }
+
+
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-size: 11px; font-weight: bold; text-transform: uppercase; color: #94a3b8; }
+
+        input, select {
+            width: 100%; padding: 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.3); color: white; font-size: 15px; outline: none;
+        }
+
+        input:focus, select:focus { border-color: var(--primary); }
+
+        button {
+            width: 100%; padding: 16px; background: var(--primary); color: white;
+            border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s;
+        }
+
+        button:hover { background: var(--dark-blue); transform: translateY(-2px); }
+
+        #map-section { width: 60%; position: relative; background: #0f172a; }
+        #map { height: 100%; width: 100%; }
+
+        .offline-message {
+            display: none; text-align: center; color: #64748b; font-weight: 500;
+            background: #0f172a; position: absolute; inset: 0; z-index: 500;
+            flex-direction: column; align-items: center; justify-content: center;
+        }
+
+        .map-overlay {
+            position: absolute; top: 20px; right: 20px; z-index: 1000;
+            background: rgba(15, 23, 42, 0.9); padding: 12px 24px; border-radius: 30px;
+            font-size: 14px; border: 1px solid var(--primary); color: white;
+            transition: all 0.3s ease;
+        }
+
+        .map-overlay.highlight {
+            background: var(--primary);
+            border-color: #fff;
+        }
+
+        @media (max-width: 768px) {
+            #map-section {
+                width: 0%;
+                display: none;
+                visibility: hidden;
+            }
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            max-width: 400px;
+        }
+
+        .toast {
+            background: rgba(15, 23, 42, 0.95);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-left: 4px solid var(--primary);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s ease-out;
+            backdrop-filter: blur(10px);
+        }
+
+        .toast.success { border-left-color: var(--success); }
+        .toast.error { border-left-color: var(--error); }
+        .toast.warning { border-left-color: var(--warning); }
+
+        .toast-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .toast-content {
+            flex: 1;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .toast-close:hover { color: white; }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+
+        .toast.hiding {
+            animation: slideOut 0.3s ease-out forwards;
+        }
+
+        /* Custom popup styling */
+        .leaflet-popup-content-wrapper {
+            background: #0f172a;
+            color: white;
+            border-radius: 8px;
+            border: 1px solid var(--primary);
+        }
+        .leaflet-popup-tip {
+            background: #0f172a;
+        }
+        .leaflet-popup-content {
+            margin: 12px;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toast-container"></div>
+
+<div class="login-container">
+    <div class="login-form-section">
+        <div class="logo-container">
+            <div class="logo">D'AVANT</div>
+            <div class="app-name">CROISSANCE</div>
+        </div>
+
+        <div class="form-card">
+            <form method="post" action="{% url 'login' %}" id="login-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Identifiant</label>
+                    <input type="text" name="username" id="username" placeholder="Nom d'utilisateur" required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label>Sécurité</label>
+                    <input type="password" name="password" id="password" placeholder="Mot de passe" required autocomplete="current-password">
+                </div>
+                <div class="form-group">
+                    <label>Paroisse</label>
+                    <select name="church" id="church-select" required>
+                        <option value="">-- Sélectionner sur la carte --</option>
+                        {% for church in churches %}
+                            <option value="{{ church.id }}"
+                                    data-lat="{{ church.location.latitude|stringformat:".6f" }}"
+                                    data-lng="{{ church.location.longitude|stringformat:".6f" }}">
+                                {{ church.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit">ACCÉDER À L'INTERFACE</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="map-section">
+        <div id="map"></div>
+        <div id="offline-ui" class="offline-message">
+            <span style="font-size: 40px; margin-bottom: 10px;">📡</span>
+            <p>Carte indisponible pour le moment</p>
+            <small>(Vérifiez votre connexion internet)</small>
+        </div>
+        <div class="map-overlay" id="location-label">📍 Congo / Brazzaville</div>
+    </div>
+</div>
+
+<script src="{% static 'leaflet/leaflet.js' %}"></script>
+<script>
+    var map = null;
+    var markers = {};
+    var mapInitialized = false;
+
+    // Toast notification system
+    function showToast(message, type = 'info', duration = 5000) {
+        var container = document.getElementById('toast-container');
+        var toast = document.createElement('div');
+        toast.className = 'toast ' + type;
+
+        var icons = {
+            success: '✅',
+            error: '❌',
+            warning: '⚠️',
+            info: 'ℹ️'
+        };
+
+        toast.innerHTML = `
+            <span class="toast-icon">${icons[type] || icons.info}</span>
+            <div class="toast-content">${message}</div>
+            <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+        `;
+
+        container.appendChild(toast);
+
+        // Auto-remove after duration
+        if (duration > 0) {
+            setTimeout(function() {
+                toast.classList.add('hiding');
+                setTimeout(function() {
+                    if (toast.parentElement) {
+                        toast.parentElement.removeChild(toast);
+                    }
+                }, 300);
+            }, duration);
+        }
+    }
+
+    // Show Django messages as toasts
+    {% if messages %}
+        window.addEventListener('load', function() {
+            {% for message in messages %}
+                showToast(
+                    '{{ message|safe|escapejs }}',
+                    '{% if message.tags == "error" %}error{% elif message.tags == "success" %}success{% elif message.tags == "warning" %}warning{% else %}info{% endif %}',
+                    8000
+                );
+            {% endfor %}
+        });
+    {% endif %}
+
+    function checkConnection() {
+        if (!navigator.onLine) {
+            document.getElementById('offline-ui').style.display = 'flex';
+            document.getElementById('map').style.opacity = '0.3';
+            showToast('Connexion internet perdue. Certaines fonctionnalités peuvent être limitées.', 'warning', 5000);
+        } else {
+            document.getElementById('offline-ui').style.display = 'none';
+            document.getElementById('map').style.opacity = '1';
+        }
+    }
+
+    function initMap() {
+        if (mapInitialized) return;
+
+        console.log('Initializing map...');
+        checkConnection();
+
+        // Initialize map with proper zoom settings
+        map = L.map('map', {
+            zoomControl: true,
+            minZoom: 5,
+            maxZoom: 16,
+            zoomAnimation: true,
+            fadeAnimation: true
+        }).setView([-1.5, 15.5], 6);
+
+        console.log('Map initialized at zoom level:', map.getZoom());
+
+        // Dark map tiles (CartoDB Dark Matter)
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '©OpenStreetMap ©CartoDB',
+            subdomains: 'abcd',
+            maxZoom: 16
+        }).addTo(map);
+
+        // Add markers for each church
+        var markerCount = 0;
+        {% for church in churches %}
+            (function() {
+                var lat = parseFloat("{{ church.location.latitude|stringformat:".6f" }}");
+                var lng = parseFloat("{{ church.location.longitude|stringformat:".6f" }}");
+                var id = {{ church.id }};
+                var name = "{{ church.name|escapejs }}";
+
+                if (!isNaN(lat) && !isNaN(lng)) {
+                    var marker = L.circleMarker([lat, lng], {
+                        radius: 9,
+                        fillColor: "#3b82f6",
+                        color: "#fff",
+                        weight: 2,
+                        fillOpacity: 0.9
+                    }).addTo(map);
+
+                    // Add tooltip
+                    marker.bindTooltip(name, {
+                        permanent: false,
+                        direction: "top",
+                        offset: [0, -10]
+                    });
+
+                    // Click event
+                    marker.on('click', function() {
+                        console.log('Marker clicked:', name);
+                        selectChurch(id, lat, lng, name);
+                    });
+
+                    markers[id] = marker;
+                    markerCount++;
+                    console.log('Marker added:', name, 'at', lat, lng);
+                } else {
+                    console.warn('Invalid coordinates for church:', name, lat, lng);
+                }
+            })();
+        {% endfor %}
+
+        mapInitialized = true;
+        console.log('Map initialized. Total markers:', markerCount);
+
+        if (markerCount === 0) {
+            showToast('Aucune paroisse disponible sur la carte.', 'warning', 5000);
+        }
+    }
+
+    function selectChurch(id, lat, lng, name) {
+        if (!map) {
+            console.error('Map not initialized!');
+            showToast('La carte n\'est pas initialisée. Veuillez rafraîchir la page.', 'error', 5000);
+            return;
+        }
+
+        var latitude = parseFloat(lat);
+        var longitude = parseFloat(lng);
+
+        if (isNaN(latitude) || isNaN(longitude)) {
+            console.error('Invalid coordinates:', lat, lng);
+            showToast('Coordonnées invalides pour cette paroisse.', 'error', 3000);
+            return;
+        }
+
+        console.log('Selecting church:', name, 'at', latitude, longitude);
+
+        // Zoom animation - flyTo with high zoom level
+        map.flyTo([latitude, longitude], 14, {
+            animate: true,
+            duration: 2,
+            easeLinearity: 0.25
+        });
+
+        // Update dropdown
+        var select = document.getElementById('church-select');
+        select.value = id;
+
+        // Update overlay label with highlight effect
+        var label = document.getElementById('location-label');
+        label.innerHTML = "📍 " + name;
+        label.classList.add('highlight');
+        setTimeout(function() {
+            label.classList.remove('highlight');
+        }, 2000);
+
+        // Reset all markers
+        for (var k in markers) {
+            markers[k].setStyle({
+                fillColor: "#3b82f6",
+                radius: 9,
+                weight: 2
+            });
+        }
+
+        // Highlight selected marker
+        if (markers[id]) {
+            markers[id].setStyle({
+                fillColor: "#fff",
+                radius: 14,
+                weight: 3
+            });
+
+            // Open popup
+            markers[id].bindPopup("<b style='color: #3b82f6;'>" + name + "</b><br>✅ Sélectionnée").openPopup();
+        }
+
+        // Visual feedback
+        showToast('Paroisse sélectionnée : ' + name, 'success', 2000);
+    }
+
+    // Form validation
+    document.getElementById('login-form').addEventListener('submit', function(e) {
+        var username = document.getElementById('username').value.trim();
+        var password = document.getElementById('password').value;
+        var church = document.getElementById('church-select').value;
+
+        if (!username) {
+            e.preventDefault();
+            showToast('Veuillez entrer votre identifiant.', 'error', 3000);
+            document.getElementById('username').focus();
+            return false;
+        }
+
+        if (!password) {
+            e.preventDefault();
+            showToast('Veuillez entrer votre mot de passe.', 'error', 3000);
+            document.getElementById('password').focus();
+            return false;
+        }
+
+        if (!church) {
+            e.preventDefault();
+            showToast('Veuillez sélectionner votre paroisse sur la carte ou dans la liste.', 'error', 5000);
+            document.getElementById('church-select').focus();
+            return false;
+        }
+
+        // Show loading state
+        var submitBtn = this.querySelector('button[type="submit"]');
+        submitBtn.innerHTML = '⏳ Connexion en cours...';
+        submitBtn.disabled = true;
+    });
+
+    // Dropdown change event
+    document.getElementById('church-select').addEventListener('change', function() {
+        var opt = this.options[this.selectedIndex];
+        if (opt && opt.value) {
+            var lat = opt.getAttribute('data-lat');
+            var lng = opt.getAttribute('data-lng');
+            var name = opt.text;
+
+            console.log('Dropdown changed:', name, lat, lng);
+
+            if (lat && lng) {
+                selectChurch(opt.value, lat, lng, name);
+            } else {
+                showToast('Cette paroisse n\'a pas de coordonnées GPS.', 'warning', 3000);
+            }
+        }
+    });
+
+    // Initialize on page load
+    window.addEventListener('load', function() {
+        setTimeout(initMap, 100);
+    });
+
+    // Handle online/offline
+    window.addEventListener('offline', function() {
+        checkConnection();
+        showToast('Connexion internet perdue.', 'warning', 5000);
+    });
+
+    window.addEventListener('online', function() {
+        console.log('Back online!');
+        checkConnection();
+        showToast('Connexion internet rétablie.', 'success', 3000);
+    });
+
+    // Handle window resize
+    window.addEventListener('resize', function() {
+        if (map) {
+            setTimeout(function() {
+                map.invalidateSize();
+            }, 200);
+        }
+    });
+</script>
+</body>
+</html>

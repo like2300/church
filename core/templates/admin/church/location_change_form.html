@@ -1,0 +1,94 @@
+{% extends "admin/change_form.html" %}
+{% load i18n static %}
+
+{% block extrahead %}
+{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{% static 'leaflet/leaflet.css' %}" />
+<style>
+    /* Fix Leaflet map display in Unfold Admin */
+    #map {
+        height: 450px;
+        width: 100%;
+        border-radius: 8px;
+        border: 2px solid #e5e7eb;
+        z-index: 999 !important;
+        position: relative;
+    }
+    .leaflet-container {
+        font-family: inherit !important;
+        z-index: 999 !important;
+        background: #f3f4f6;
+    }
+    .leaflet-pane {
+        z-index: 1000 !important;
+    }
+    .leaflet-popup-content-wrapper {
+        border-radius: 8px !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+        z-index: 1001 !important;
+    }
+    .leaflet-popup-content {
+        margin: 12px !important;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+    .map-container {
+        position: relative;
+        z-index: 999;
+    }
+</style>
+{% endblock %}
+
+{% block after_field_sets %}
+<div class="map-container">
+    <div class="border border-gray-200 rounded-lg overflow-hidden shadow-sm bg-white">
+        <div class="bg-blue-50 px-4 py-3 border-b border-gray-200">
+            <h3 class="font-semibold text-blue-700">
+                📍 Carte Interactive - Département
+            </h3>
+        </div>
+        
+        <div class="p-4">
+            <!-- Carte Leaflet -->
+            <div id="map" class="map-container"></div>
+            
+            <!-- Message d'erreur -->
+            <div id="map-error" style="display:none;" class="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700">
+                ⚠️ Impossible de charger la carte.
+            </div>
+            
+            <!-- Instructions -->
+            <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <h4 class="font-semibold text-blue-800 mb-2">
+                    📌 Comment utiliser la carte :
+                </h4>
+                <ul class="text-sm text-blue-700 space-y-1">
+                    <li>• <strong>Cliquez sur la carte</strong> pour définir les coordonnées GPS</li>
+                    <li>• <strong>Survolez un département</strong> pour voir son nom</li>
+                    <li>• Les champs <strong>Latitude</strong> et <strong>Longitude</strong> sont remplis automatiquement</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'leaflet/leaflet.js' %}"></script>
+<script src="{% static 'js/admin_map.js' %}"></script>
+<script>
+// Initialize map when DOM is ready
+(function() {
+    if (typeof L === 'undefined') {
+        console.error('Leaflet not loaded');
+        document.getElementById('map-error').style.display = 'block';
+        return;
+    }
+    
+    // Wait for DOM
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initMap);
+    } else {
+        initMap();
+    }
+})();
+</script>
+{% endblock %}

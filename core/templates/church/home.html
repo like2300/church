@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+
+{% block title %}Tableau de Bord - Church App{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 pb-6 border-b-2 border-gray-100 gap-4">
+        <div class="flex items-center gap-3">
+            <span class="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-400 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-500/30 flex-shrink-0">
+                <i class="fas fa-th-large"></i>
+            </span>
+            <div>
+                <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Tableau de Bord</h1>
+                <p class="text-xs sm:text-sm text-gray-500 mt-0.5">Vue d'ensemble des activités de votre église</p>
+            </div>
+        </div>
+        <div class="flex gap-2 sm:gap-3 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0">
+            <a href="{% url 'member_list' %}" class="flex-shrink-0 px-3 sm:px-4 py-2 text-[9px] sm:text-[10px] uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors font-medium flex items-center gap-2 whitespace-nowrap">
+                <i class="fas fa-users"></i>
+                <span class="hidden xs:inline">Membres</span>
+            </a>
+            <a href="{% url 'culte_session_list' %}" class="flex-shrink-0 px-3 sm:px-4 py-2 text-[9px] sm:text-[10px] uppercase tracking-widest text-gray-500 hover:text-gray-900 transition-colors font-medium flex items-center gap-2 whitespace-nowrap">
+                <i class="fas fa-church"></i>
+                <span class="hidden xs:inline">Cultes</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Summary Stats Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-4 shadow-lg shadow-blue-500/20">
+            <div class="flex items-center justify-between mb-2">
+                <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-users text-white text-sm"></i>
+                </div>
+            </div>
+            <p class="text-[9px] uppercase tracking-widest text-blue-100 font-semibold">Total Membres</p>
+            <p class="text-2xl font-bold text-white mt-1">{{ total_members }}</p>
+        </div>
+        <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between mb-2">
+                <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-user-plus text-yellow-600 text-sm"></i>
+                </div>
+            </div>
+            <p class="text-[9px] uppercase tracking-widest text-gray-400 font-semibold">Visiteurs</p>
+            <p class="text-2xl font-bold text-yellow-600 mt-1">{{ visitors }}</p>
+        </div>
+        <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between mb-2">
+                <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-check-circle text-green-600 text-sm"></i>
+                </div>
+            </div>
+            <p class="text-[9px] uppercase tracking-widest text-gray-400 font-semibold">Membres Actifs</p>
+            <p class="text-2xl font-bold text-green-600 mt-1">{{ regular_members }}</p>
+        </div>
+        <div class="bg-white rounded-xl border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between mb-2">
+                <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-church text-purple-600 text-sm"></i>
+                </div>
+            </div>
+            <p class="text-[9px] uppercase tracking-widest text-gray-400 font-semibold">Total Cultes</p>
+            <p class="text-2xl font-bold text-purple-600 mt-1">{{ total_cultes }}</p>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="mb-8">
+        <h2 class="text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-4 pb-2 border-b border-gray-100">⚡ Actions Rapides</h2>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <a href="{% url 'culte_session_create' %}" class="group bg-white rounded-xl border border-gray-200 p-4 shadow-sm hover:shadow-lg hover:shadow-purple-500/20 hover:border-purple-200 transition-all">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-purple-600 to-purple-400 rounded-lg flex items-center justify-center text-white shadow-md shadow-purple-500/30">
+                        <i class="fas fa-plus text-sm"></i>
+                    </div>
+                </div>
+                <h3 class="text-sm font-semibold text-gray-900 mb-1">Nouveau Culte</h3>
+                <p class="text-[10px] text-gray-500">Créer une session de culte</p>
+            </a>
+
+            <a href="{% url 'member_create' %}" class="group bg-white rounded-xl border border-gray-200 p-4 shadow-sm hover:shadow-lg hover:shadow-blue-500/20 hover:border-blue-200 transition-all">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-400 rounded-lg flex items-center justify-center text-white shadow-md shadow-blue-500/30">
+                        <i class="fas fa-user-plus text-sm"></i>
+                    </div>
+                </div>
+                <h3 class="text-sm font-semibold text-gray-900 mb-1">Nouveau Membre</h3>
+                <p class="text-[10px] text-gray-500">Enregistrer un membre</p>
+            </a>
+
+            <a href="{% url 'attendance_create' %}" class="group bg-white rounded-xl border border-gray-200 p-4 shadow-sm hover:shadow-lg hover:shadow-green-500/20 hover:border-green-200 transition-all">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-green-600 to-green-400 rounded-lg flex items-center justify-center text-white shadow-md shadow-green-500/30">
+                        <i class="fas fa-calendar-check text-sm"></i>
+                    </div>
+                </div>
+                <h3 class="text-sm font-semibold text-gray-900 mb-1">Noter Présence</h3>
+                <p class="text-[10px] text-gray-500">Enregistrer une présence</p>
+            </a>
+
+            <a href="{% url 'alerts_list' %}" class="group bg-white rounded-xl border border-gray-200 p-4 shadow-sm hover:shadow-lg hover:shadow-red-500/20 hover:border-red-200 transition-all">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-red-600 to-red-400 rounded-lg flex items-center justify-center text-white shadow-md shadow-red-500/30">
+                        <i class="fas fa-bell text-sm"></i>
+                    </div>
+                </div>
+                <h3 class="text-sm font-semibold text-gray-900 mb-1">Alertes</h3>
+                <p class="text-[10px] text-gray-500">Voir les absences</p>
+            </a>
+        </div>
+    </div>
+
+    <!-- Info Section -->
+    <div class="bg-white rounded-xl border border-gray-200 p-6 shadow-sm mb-8">
+        <h2 class="text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-4 pb-2 border-b border-gray-100">📊 Vue d'ensemble</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="flex items-start gap-4">
+                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-chart-line text-blue-600"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-900 mb-1">Conversion des visiteurs</h3>
+                    <p class="text-xs text-gray-500 font-light">Les visiteurs deviennent membres actifs après avoir atteint le quota de présences requis.</p>
+                </div>
+            </div>
+            <div class="flex items-start gap-4">
+                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-clipboard-list text-green-600"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-900 mb-1">Suivi des cultes</h3>
+                    <p class="text-xs text-gray-500 font-light">Enregistrez les sessions de culte et les présences pour chaque membre.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Section -->
+    <div class="bg-gradient-to-r from-gray-50 to-white rounded-xl border-2 border-dashed border-gray-300 p-6">
+        <h2 class="text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-4 pb-2 border-b border-gray-200 flex items-center gap-2">
+            <i class="fas fa-download text-blue-500"></i>
+            📥 Exporter les données
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Export Membres -->
+            <a href="{% url 'member_list' %}?export=csv" class="group bg-white rounded-xl border-2 border-blue-200 p-4 shadow-sm hover:shadow-lg hover:shadow-blue-500/20 hover:border-blue-400 transition-all">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-400 rounded-xl flex items-center justify-center text-white shadow-md shadow-blue-500/30">
+                        <i class="fas fa-users text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-900">Membres</h3>
+                        <p class="text-[10px] text-gray-500">Exporter la liste</p>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Export Présences -->
+            <a href="{% url 'attendance_export' %}" class="group bg-white rounded-xl border-2 border-green-200 p-4 shadow-sm hover:shadow-lg hover:shadow-green-500/20 hover:border-green-400 transition-all">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-gradient-to-br from-green-600 to-green-400 rounded-xl flex items-center justify-center text-white shadow-md shadow-green-500/30">
+                        <i class="fas fa-calendar-check text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-900">Présences</h3>
+                        <p class="text-[10px] text-gray-500">Exporter l'historique</p>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Export Cultes -->
+            <a href="{% url 'culte_session_list' %}?export=csv" class="group bg-white rounded-xl border-2 border-purple-200 p-4 shadow-sm hover:shadow-lg hover:shadow-purple-500/20 hover:border-purple-400 transition-all">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-gradient-to-br from-purple-600 to-purple-400 rounded-xl flex items-center justify-center text-white shadow-md shadow-purple-500/30">
+                        <i class="fas fa-church text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-900">Cultes</h3>
+                        <p class="text-[10px] text-gray-500">Exporter les sessions</p>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Export Alertes -->
+            <a href="{% url 'alerts_export' %}" class="group bg-white rounded-xl border-2 border-red-200 p-4 shadow-sm hover:shadow-lg hover:shadow-red-500/20 hover:border-red-400 transition-all">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-gradient-to-br from-red-600 to-red-400 rounded-xl flex items-center justify-center text-white shadow-md shadow-red-500/30">
+                        <i class="fas fa-bell text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-900">Alertes</h3>
+                        <p class="text-[10px] text-gray-500">Exporter les absences</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

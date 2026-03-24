@@ -1,0 +1,397 @@
+{% extends 'base.html' %}
+
+{% block title %}Statistiques - Church App{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 pb-6 border-b-2 border-gray-100 gap-6">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-400 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-500/30 flex-shrink-0">
+                <i class="fas fa-chart-bar text-xl"></i>
+            </div>
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Statistiques</h1>
+                <p class="text-sm text-gray-500 mt-1">Vue d'ensemble analytique de l'activité</p>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2 w-full md:w-auto">
+            <button onclick="window.print()" class="flex-1 md:flex-none px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-xs font-semibold text-gray-600 hover:bg-gray-50 transition-all flex items-center justify-center gap-2 shadow-sm no-print">
+                <i class="fas fa-print"></i>
+                Imprimer
+            </button>
+            <a href="{% url 'report_generate' %}?date_from={{ selected_date_from }}&date_to={{ selected_date_to }}" 
+               class="flex-1 md:flex-none px-4 py-2.5 bg-gradient-to-r from-purple-600 to-purple-500 text-white rounded-lg text-xs font-semibold hover:shadow-lg hover:shadow-purple-500/30 transition-all flex items-center justify-center gap-2 no-print">
+                <i class="fas fa-file-alt"></i>
+                Générer Rapport
+            </a>
+            <a href="{% url 'statistics_export' %}?format=excel&date_from={{ selected_date_from }}&date_to={{ selected_date_to }}" 
+               class="flex-1 md:flex-none px-4 py-2.5 bg-gradient-to-r from-green-600 to-green-500 text-white rounded-lg text-xs font-semibold hover:shadow-lg hover:shadow-green-500/30 transition-all flex items-center justify-center gap-2 no-print">
+                <i class="fas fa-file-excel"></i>
+                Exporter Excel
+            </a>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-white rounded-xl border border-gray-200 p-6 mb-8 shadow-sm no-print">
+        <form method="get" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div>
+                <label class="block text-[9px] uppercase tracking-widest text-gray-400 font-semibold mb-2">Date Début</label>
+                <input type="date" name="date_from" value="{{ selected_date_from }}" class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+                <label class="block text-[9px] uppercase tracking-widest text-gray-400 font-semibold mb-2">Date Fin</label>
+                <input type="date" name="date_to" value="{{ selected_date_to }}" class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+                <label class="block text-[9px] uppercase tracking-widest text-gray-400 font-semibold mb-2">Type de Culte</label>
+                <select name="culte_type" class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white">
+                    <option value="">Tous les types</option>
+                    {% for ct in culte_types %}
+                    <option value="{{ ct.id }}" {% if selected_culte_type == ct.id|stringformat:"s" %}selected{% endif %}>{{ ct.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="flex items-end">
+                <button type="submit" class="w-full py-2.5 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-lg text-xs font-bold hover:shadow-lg hover:shadow-blue-500/30 transition-all flex items-center justify-center gap-2">
+                    <i class="fas fa-search"></i>
+                    Filtrer
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex items-center gap-2 mb-2">
+                <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-users text-blue-600 text-sm"></i>
+                </div>
+                <p class="text-[9px] font-bold text-blue-500 uppercase tracking-wider">Membres</p>
+            </div>
+            <p class="text-2xl font-bold text-gray-900">{{ total_members }}</p>
+        </div>
+        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex items-center gap-2 mb-2">
+                <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-user-clock text-yellow-600 text-sm"></i>
+                </div>
+                <p class="text-[9px] font-bold text-yellow-500 uppercase tracking-wider">Visiteurs</p>
+            </div>
+            <p class="text-2xl font-bold text-gray-900">{{ visitors }}</p>
+        </div>
+        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex items-center gap-2 mb-2">
+                <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-user-check text-green-600 text-sm"></i>
+                </div>
+                <p class="text-[9px] font-bold text-green-500 uppercase tracking-wider">Actifs</p>
+            </div>
+            <p class="text-2xl font-bold text-gray-900">{{ regular_members }}</p>
+        </div>
+        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex items-center gap-2 mb-2">
+                <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-church text-purple-600 text-sm"></i>
+                </div>
+                <p class="text-[9px] font-bold text-purple-500 uppercase tracking-wider">Cultes</p>
+            </div>
+            <p class="text-2xl font-bold text-gray-900">{{ total_cultes }}</p>
+        </div>
+        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex items-center gap-2 mb-2">
+                <div class="w-8 h-8 bg-pink-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-calendar-check text-pink-600 text-sm"></i>
+                </div>
+                <p class="text-[9px] font-bold text-pink-500 uppercase tracking-wider">Présences</p>
+            </div>
+            <p class="text-2xl font-bold text-gray-900">{{ total_presences }}</p>
+        </div>
+        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex items-center gap-2 mb-2">
+                <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-percent text-orange-600 text-sm"></i>
+                </div>
+                <p class="text-[9px] font-bold text-orange-500 uppercase tracking-wider">Taux</p>
+            </div>
+            <p class="text-2xl font-bold text-gray-900">{{ participation_rate }}%</p>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+                <span class="w-1.5 h-4 bg-blue-500 rounded-full"></span>
+                Présences par type de culte
+            </h3>
+            <div class="h-64">
+                <canvas id="chart-type"></canvas>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+                <span class="w-1.5 h-4 bg-purple-500 rounded-full"></span>
+                Répartition par Genre
+            </h3>
+            <div class="h-64">
+                <canvas id="chart-genre"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm mb-6">
+        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+            <span class="w-1.5 h-4 bg-green-500 rounded-full"></span>
+            Évolution mensuelle des présences
+        </h3>
+        <div class="h-80">
+            <canvas id="chart-months"></canvas>
+        </div>
+    </div>
+
+    <!-- Detailed Data Table -->
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-6">
+        <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+            <h3 class="text-sm font-bold text-gray-700 flex items-center gap-2">
+                <i class="fas fa-table text-blue-500"></i>
+                Données détaillées par type de culte
+            </h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-[9px] uppercase tracking-widest text-gray-500 font-bold">Type de culte</th>
+                        <th class="px-6 py-3 text-center text-[9px] uppercase tracking-widest text-gray-500 font-bold">Présences</th>
+                        <th class="px-6 py-3 text-center text-[9px] uppercase tracking-widest text-gray-500 font-bold">Pourcentage</th>
+                        <th class="px-6 py-3 text-center text-[9px] uppercase tracking-widest text-gray-500 font-bold">Visualisation</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100">
+                    {% for item in presences_by_type %}
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ item.name }}</td>
+                        <td class="px-6 py-4 text-center">
+                            <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-blue-50 text-blue-600 font-bold text-sm">
+                                {{ item.count }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-center">
+                            <span class="text-sm font-semibold text-gray-700">{{ item.percentage }}%</span>
+                        </td>
+                        <td class="px-6 py-4 text-center">
+                            <div class="w-32 mx-auto bg-gray-200 rounded-full h-2 overflow-hidden">
+                                <div class="bg-gradient-to-r from-blue-500 to-blue-600 h-full rounded-full" style="width: {{ item.percentage }}%"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="px-6 py-12 text-center text-gray-400">
+                            <i class="fas fa-inbox text-4xl mb-3"></i>
+                            <p class="text-sm">Aucune donnée disponible</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<style>
+    @media print {
+        .sidebar, nav, button, form, .no-print { display: none !important; }
+        body { background: white; }
+        .max-w-7xl { max-width: none; padding: 0; }
+        .rounded-xl, .rounded-2xl { border-radius: 8px !important; }
+    }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #E5E7EB; border-radius: 10px; }
+</style>
+
+<script>
+    // Data from Django
+    const presencesByType = {{ presences_by_type|safe }};
+    const presencesByMonth = {{ presences_by_month|safe }};
+    const genreData = {
+        labels: ['Hommes', 'Femmes', 'Enfants'],
+        values: [{{ hommes }}, {{ femmes }}, {{ enfants }}],
+        colors: ['#3B82F6', '#EC4899', '#F59E0B']
+    };
+
+    // Chart.js default config
+    Chart.defaults.font.family = "'Inter', sans-serif";
+    Chart.defaults.color = '#6B7280';
+
+    // --- Bar Chart - Présences par type ---
+    function renderTypeChart() {
+        const ctx = document.getElementById('chart-type');
+        if (!ctx || !presencesByType || presencesByType.length === 0) return;
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: presencesByType.map(item => item.name),
+                datasets: [{
+                    label: 'Présences',
+                    data: presencesByType.map(item => item.count),
+                    backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(17, 24, 39, 0.9)',
+                        padding: 12,
+                        titleFont: { size: 13, weight: 'bold' },
+                        bodyFont: { size: 12 },
+                        cornerRadius: 8,
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#F3F4F6' },
+                        ticks: { precision: 0 }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    }
+
+    // --- Donut Chart - Répartition Genre ---
+    function renderGenreChart() {
+        const ctx = document.getElementById('chart-genre');
+        if (!ctx) return;
+
+        const total = genreData.values.reduce((a, b) => a + b, 0);
+        if (total === 0) {
+            document.getElementById('chart-genre').parentNode.innerHTML = '<p class="text-gray-400 text-sm text-center py-8">Aucune donnée</p>';
+            return;
+        }
+
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: genreData.labels,
+                datasets: [{
+                    data: genreData.values,
+                    backgroundColor: genreData.colors,
+                    borderWidth: 3,
+                    borderColor: '#FFFFFF'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            font: { size: 11 },
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(17, 24, 39, 0.9)',
+                        padding: 12,
+                        titleFont: { size: 13, weight: 'bold' },
+                        bodyFont: { size: 12 },
+                        cornerRadius: 8,
+                        callbacks: {
+                            label: function(context) {
+                                const value = context.raw;
+                                const percentage = ((value / total) * 100).toFixed(1);
+                                return value + ' (' + percentage + '%)';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // --- Line Chart - Évolution mensuelle ---
+    function renderMonthChart() {
+        const ctx = document.getElementById('chart-months');
+        if (!ctx || !presencesByMonth || presencesByMonth.length === 0) return;
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: presencesByMonth.map(item => item.month),
+                datasets: [{
+                    label: 'Présences',
+                    data: presencesByMonth.map(item => item.count),
+                    borderColor: 'rgba(34, 197, 94, 1)',
+                    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: 'rgba(34, 197, 94, 1)',
+                    pointBorderColor: '#FFFFFF',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(17, 24, 39, 0.9)',
+                        padding: 12,
+                        titleFont: { size: 13, weight: 'bold' },
+                        bodyFont: { size: 12 },
+                        cornerRadius: 8,
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#F3F4F6' },
+                        ticks: { precision: 0 }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    }
+
+    // Initialize charts
+    document.addEventListener('DOMContentLoaded', () => {
+        renderTypeChart();
+        renderGenreChart();
+        renderMonthChart();
+    });
+</script>
+{% endblock %}

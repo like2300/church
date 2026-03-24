@@ -1,0 +1,250 @@
+{% extends 'base.html' %}
+
+{% block title %}Noter une présence - Church App{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-10">
+
+    <div class="text-center mb-12">
+        <h1 class="text-3xl font-light tracking-tight text-gray-900">
+            Enregistrer une <span class="text-blue-600 font-semibold italic">Présence</span>
+        </h1>
+        <div class="h-1 w-20 bg-blue-600 mx-auto mt-4 rounded-full"></div>
+    </div>
+
+    <!-- Section Recherche -->
+    <section class="mb-12">
+        <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-3">
+                <span class="flex items-center justify-center w-8 h-8 rounded-full bg-blue-50 text-blue-600 text-xs font-bold border border-blue-100 shadow-sm">01</span>
+                <h2 class="text-[10px] uppercase tracking-[0.2em] text-blue-500 font-bold">Identifier le membre</h2>
+            </div>
+            <a href="{% url 'member_create' %}" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-xs font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Ajouter membre
+            </a>
+        </div>
+
+        <form method="get" class="relative group">
+            <input type="text" name="search" placeholder="Entrez le nom ou prénom..." value="{{ search }}"
+                   class="w-full bg-white border-0 border-b-2 border-gray-100 py-4 pl-0 pr-12 focus:ring-0 focus:border-blue-600 transition-all text-xl font-light placeholder-gray-300 text-gray-800">
+            <button type="submit" class="absolute right-0 top-1/2 -translate-y-1/2 p-2 text-gray-400 group-hover:text-blue-600 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </button>
+        </form>
+        
+        <!-- Search results info -->
+        {% if search %}
+        <div class="mt-4 flex items-center justify-between">
+            <p class="text-sm text-gray-500">
+                {% if members %}
+                    <i class="fas fa-search mr-1"></i>
+                    {{ members.paginator.count }} membre(s) trouvé(s) pour "<strong>{{ search }}</strong>"
+                {% else %}
+                    <i class="fas fa-times-circle mr-1"></i>
+                    Aucun membre trouvé pour "<strong>{{ search }}</strong>"
+                {% endif %}
+            </p>
+            {% if search %}
+            <a href="{% url 'attendance_create' %}" class="text-xs text-blue-600 hover:text-blue-800 font-medium">
+                <i class="fas fa-times mr-1"></i>Effacer
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </section>
+
+    <!-- Liste des membres -->
+    {% if members %}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12 animate-fade-in">
+        {% for member in members %}
+        <button type="button" onclick="openAttendanceModal({{ member.id }}, '{{ member.first_name }}', '{{ member.last_name }}', '{{ member.church.name }}')"
+                class="flex items-center p-4 text-left bg-white border border-gray-100 hover:border-blue-300 hover:bg-blue-50/30 transition-all group shadow-sm hover:shadow-md">
+            <div class="w-10 h-10 bg-blue-600 flex items-center justify-center text-white text-sm font-bold mr-4 shadow-md group-hover:scale-110 transition-transform">
+                {{ member.first_name|first|upper }}
+            </div>
+            <div class="flex-grow">
+                <p class="text-sm font-semibold text-gray-900 leading-tight">{{ member.first_name }} {{ member.last_name }}</p>
+                <p class="text-[10px] text-blue-400 uppercase tracking-widest mt-1">{{ member.church.name }}</p>
+            </div>
+            <span class="text-blue-200 group-hover:text-blue-600 transition-colors">
+                <i class="fas fa-chevron-right w-5 h-5"></i>
+            </span>
+        </button>
+        {% endfor %}
+    </div>
+    
+    <!-- Pagination -->
+    {% if members.has_other_pages %}
+    <div class="flex items-center justify-center gap-2 mb-12">
+        {% if members.has_previous %}
+        <a href="?search={{ search }}&page={{ members.previous_page_number }}" 
+           class="px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+        {% else %}
+        <span class="px-4 py-2 bg-gray-100 text-gray-400 rounded-lg cursor-not-allowed">
+            <i class="fas fa-chevron-left"></i>
+        </span>
+        {% endif %}
+        
+        <span class="px-4 py-2 text-sm text-gray-600">
+            Page {{ members.number }} sur {{ members.paginator.num_pages }}
+        </span>
+        
+        {% if members.has_next %}
+        <a href="?search={{ search }}&page={{ members.next_page_number }}" 
+           class="px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+            <i class="fas fa-chevron-right"></i>
+        </a>
+        {% else %}
+        <span class="px-4 py-2 bg-gray-100 text-gray-400 rounded-lg cursor-not-allowed">
+            <i class="fas fa-chevron-right"></i>
+        </span>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    {% elif search %}
+    <!-- No results state -->
+    <div class="text-center py-12">
+        <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-user-slash text-gray-400 text-3xl"></i>
+        </div>
+        <p class="text-gray-500 font-medium">Aucun membre trouvé</p>
+        <p class="text-sm text-gray-400 mt-1">Essayez avec un autre nom ou prénom</p>
+        <a href="{% url 'member_create' %}" class="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-blue-600 text-white text-xs font-medium rounded-lg hover:bg-blue-700 transition-colors">
+            <i class="fas fa-plus"></i>
+            Ajouter ce membre
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Modal de présence -->
+<div id="attendance-modal" class="fixed inset-0 z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <!-- Backdrop -->
+    <div class="fixed inset-0 bg-gray-900/75 backdrop-blur-sm transition-opacity" onclick="closeAttendanceModal()"></div>
+
+    <!-- Modal Panel -->
+    <div class="flex min-h-full items-center justify-center p-4">
+        <div class="relative bg-white rounded-2xl shadow-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto">
+            <!-- Header -->
+            <div class="flex items-center justify-between p-6 border-b border-gray-100 sticky top-0 bg-white rounded-t-2xl">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-900">
+                        <i class="fas fa-calendar-check text-blue-600 mr-2"></i>Enregistrer la présence
+                    </h3>
+                    <p class="text-sm text-gray-500 mt-1">Sélectionnez la session de culte</p>
+                </div>
+                <button type="button" onclick="closeAttendanceModal()" class="text-gray-400 hover:text-gray-600 transition-colors p-2 hover:bg-gray-100 rounded-lg">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Body -->
+            <form method="post" id="attendance-form" class="p-6">
+                {% csrf_token %}
+                <input type="hidden" name="member" id="id_member" value="">
+                <input type="hidden" name="date" id="culte-date" value="">
+
+                <!-- Membre sélectionné -->
+                <div class="bg-gradient-to-r from-green-50 to-green-100 border-l-4 border-green-500 rounded-xl p-4 mb-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center text-white text-lg font-bold shadow-md">
+                            <span id="modal-member-initial"></span>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-gray-900" id="modal-member-name"></p>
+                            <p class="text-xs text-gray-500" id="modal-member-church"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Session de culte -->
+                <div class="mb-6">
+                    <label class="block text-xs uppercase tracking-widest text-orange-600 font-bold mb-3">
+                        <i class="fas fa-church mr-1"></i>Session de culte
+                    </label>
+                    <div id="culte-sessions-container">
+                        <select name="culte_session" id="id_culte_session" required class="w-full bg-white border border-gray-200 p-3 text-sm rounded-lg focus:border-orange-500 focus:ring-0">
+                            <option value="">Sélectionnez une session</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Boutons -->
+                <div class="flex gap-3">
+                    <button type="submit" class="flex-1 bg-blue-600 text-white py-3 px-6 text-xs uppercase tracking-wider font-bold rounded-lg hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30">
+                        <i class="fas fa-check-circle mr-2"></i>Valider
+                    </button>
+                    <button type="button" onclick="closeAttendanceModal()" class="px-6 py-3 bg-gray-100 text-gray-700 text-xs uppercase tracking-wider font-bold rounded-lg hover:bg-gray-200 transition-all">
+                        Annuler
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openAttendanceModal(memberId, firstName, lastName, churchName) {
+        // Set member info
+        document.getElementById('id_member').value = memberId;
+        document.getElementById('modal-member-initial').textContent = firstName.charAt(0).toUpperCase();
+        document.getElementById('modal-member-name').textContent = firstName + ' ' + lastName;
+        document.getElementById('modal-member-church').textContent = churchName;
+        
+        // Set date
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('culte-date').value = today;
+        
+        // Show modal
+        document.getElementById('attendance-modal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+        
+        // Load culte sessions
+        loadCulteSessions();
+    }
+
+    function closeAttendanceModal() {
+        document.getElementById('attendance-modal').classList.add('hidden');
+        document.body.style.overflow = '';
+    }
+
+    function loadCulteSessions() {
+        const date = document.getElementById('culte-date').value;
+        const memberId = document.getElementById('id_member').value;
+        if (!date || !memberId) return;
+
+        fetch(`/api/culte-sessions/?date=${date}&member_id=${memberId}`)
+            .then(res => res.json())
+            .then(data => {
+                const container = document.getElementById('culte-sessions-container');
+                if (data.sessions && data.sessions.length > 0) {
+                    let options = '<select name="culte_session" required class="w-full bg-white border border-gray-200 p-3 text-sm rounded-lg focus:border-orange-500 focus:ring-0">';
+                    options += '<option value="">-- Choisir une session --</option>';
+                    data.sessions.forEach(s => {
+                        options += `<option value="${s.id}">${s.culte_type} - ${s.theme}</option>`;
+                    });
+                    options += '</select>';
+                    container.innerHTML = options;
+                } else {
+                    container.innerHTML = '<p class="text-xs text-red-400 font-medium p-3 bg-red-50 border border-red-100 rounded-lg">Aucun culte pour cette date.</p>';
+                }
+            })
+            .catch(err => {
+                console.error('Error loading culte sessions:', err);
+            });
+    }
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeAttendanceModal();
+        }
+    });
+</script>
+{% endblock %}

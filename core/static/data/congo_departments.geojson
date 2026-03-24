@@ -1,0 +1,138 @@
+{
+  "type": "FeatureCollection",
+  "name": "Congo_Brazzaville_Departments",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Brazzaville",
+        "chef_lieu": "Brazzaville"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[15.20, -4.35], [15.35, -4.35], [15.35, -4.20], [15.20, -4.20], [15.20, -4.35]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Pointe-Noire",
+        "chef_lieu": "Pointe-Noire"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[11.75, -4.85], [11.95, -4.85], [11.95, -4.70], [11.75, -4.70], [11.75, -4.85]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Bouenza",
+        "chef_lieu": "Madingou"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[13.40, -4.30], [13.70, -4.30], [13.70, -4.00], [13.40, -4.00], [13.40, -4.30]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Cuvette",
+        "chef_lieu": "Owando"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[15.60, -0.70], [16.20, -0.70], [16.20, -0.20], [15.60, -0.20], [15.60, -0.70]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Cuvette-Ouest",
+        "chef_lieu": "Ewo"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[14.60, -0.30], [15.10, -0.30], [15.10, 0.20], [14.60, 0.20], [14.60, -0.30]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Kouilou",
+        "chef_lieu": "Loango"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[11.60, -4.75], [12.00, -4.75], [12.00, -4.50], [11.60, -4.50], [11.60, -4.75]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Lékoumou",
+        "chef_lieu": "Sibiti"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[13.10, -3.85], [13.55, -3.85], [13.55, -3.50], [13.10, -3.50], [13.10, -3.85]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Likouala",
+        "chef_lieu": "Impfondo"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[17.80, 1.40], [18.30, 1.40], [18.30, 1.85], [17.80, 1.85], [17.80, 1.40]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Niari",
+        "chef_lieu": "Dolisie"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[12.40, -4.40], [12.90, -4.40], [12.90, -4.00], [12.40, -4.00], [12.40, -4.40]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Plateaux",
+        "chef_lieu": "Djambala"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[14.50, -2.75], [15.00, -2.75], [15.00, -2.30], [14.50, -2.30], [14.50, -2.75]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Pool",
+        "chef_lieu": "Kinkala"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[14.55, -4.55], [15.00, -4.55], [15.00, -4.15], [14.55, -4.15], [14.55, -4.55]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Sangha",
+        "chef_lieu": "Ouesso"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[15.80, 1.40], [16.30, 1.40], [16.30, 1.85], [15.80, 1.85], [15.80, 1.40]]]
+      }
+    }
+  ]
+}

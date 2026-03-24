@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block title %}Créer une Session de Culte{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+    <div class="flex justify-between items-center mb-12 border-b border-gray-100 pb-6">
+        <a href="{% url 'home' %}" class="group flex items-center text-[10px] uppercase tracking-widest text-gray-400 hover:text-gray-900 transition-colors">
+            <svg class="w-4 h-4 mr-2 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            Retour à l'accueil
+        </a>
+        <span class="text-[10px] uppercase tracking-widest text-gray-400">Nouvelle Session de Culte</span>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-16">
+
+        <div class="lg:col-span-4">
+            <div class="sticky top-10">
+                <div class="py-10">
+                    <h2 class="text-xl font-light text-gray-900 mb-4">Informations</h2>
+                    <p class="text-sm text-gray-500 font-light mb-6">
+                        Créez une nouvelle session de culte pour votre église. Cette session sera utilisée pour noter les présences des membres.
+                    </p>
+                    
+                    <div class="space-y-6 border-t border-gray-50 pt-8">
+                        <div>
+                            <span class="block text-[10px] uppercase tracking-widest text-gray-400 mb-2">Église</span>
+                            <p class="text-sm text-gray-800 font-light">{{ user_church.name }}</p>
+                        </div>
+                        <div>
+                            <span class="block text-[10px] uppercase tracking-widest text-gray-400 mb-2">Localisation</span>
+                            <p class="text-sm text-gray-800 font-light">{{ user_church.location.name }}</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-10 bg-blue-50 border border-blue-100 rounded-lg p-4">
+                        <p class="text-xs text-blue-700 font-light">
+                            <strong class="font-medium">💡 Astuce :</strong> Vous pouvez créer plusieurs sessions pour la même journée (ex: culte dominical, étude biblique, réveil).
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-8">
+            <h2 class="text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-8 pb-4 border-b border-gray-50">
+                Formulaire de Session
+            </h2>
+
+            <form method="post" class="space-y-8">
+                {% csrf_token %}
+                
+                <!-- Church info - auto-filled -->
+                <div class="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-6">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 text-blue-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                        </svg>
+                        <div>
+                            <p class="text-sm text-blue-800">
+                                <strong>Paroisse :</strong> {{ user_church.name }} ({{ user_church.location.name }})
+                            </p>
+                            <p class="text-xs text-blue-600 mt-1">La session de culte sera automatiquement associée à votre paroisse.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="md:col-span-2">
+                        <label class="block text-[10px] uppercase tracking-widest text-gray-400 mb-2">
+                            {{ form.culte_type.label }}
+                        </label>
+                        {{ form.culte_type }}
+                        {% if form.culte_type.errors %}
+                            <p class="text-xs text-red-500 mt-1">{{ form.culte_type.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-[10px] uppercase tracking-widest text-gray-400 mb-2">
+                            {{ form.theme.label }}
+                        </label>
+                        {{ form.theme }}
+                        {% if form.theme.errors %}
+                            <p class="text-xs text-red-500 mt-1">{{ form.theme.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] uppercase tracking-widest text-gray-400 mb-2">
+                            {{ form.date.label }}
+                        </label>
+                        {{ form.date }}
+                        {% if form.date.errors %}
+                            <p class="text-xs text-red-500 mt-1">{{ form.date.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] uppercase tracking-widest text-gray-400 mb-2">
+                            {{ form.officiant.label }}
+                        </label>
+                        {{ form.officiant }}
+                        {% if form.officiant.errors %}
+                            <p class="text-xs text-red-500 mt-1">{{ form.officiant.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="pt-6 border-t border-gray-100 flex items-center gap-4">
+                    <button type="submit" class="px-8 py-3 bg-gray-900 text-white text-[10px] uppercase tracking-widest font-medium hover:bg-gray-800 transition-all">
+                        Créer la Session
+                    </button>
+                    <a href="{% url 'home' %}" class="text-[10px] uppercase tracking-widest text-gray-400 hover:text-gray-900 transition-colors">
+                        Annuler
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

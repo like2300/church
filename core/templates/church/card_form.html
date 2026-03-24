@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+
+{% block title %}Créer une Carte de Membre{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+    <div class="flex justify-between items-center mb-12 border-b border-gray-100 pb-6">
+        {% if member %}
+        <a href="{% url 'member_detail' member.pk %}" class="group flex items-center text-[10px] uppercase tracking-widest text-gray-400 hover:text-gray-900 transition-colors">
+            <svg class="w-4 h-4 mr-2 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            Retour au membre
+        </a>
+        {% else %}
+        <a href="{% url 'member_list' %}" class="group flex items-center text-[10px] uppercase tracking-widest text-gray-400 hover:text-gray-900 transition-colors">
+            <svg class="w-4 h-4 mr-2 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            Retour à la liste
+        </a>
+        {% endif %}
+        <span class="text-[10px] uppercase tracking-widest text-gray-400">Nouvelle Carte de Membre</span>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-16">
+
+        <div class="lg:col-span-4">
+            <div class="sticky top-10">
+                {% if member %}
+                <div class="w-24 h-24 bg-gray-50 border border-gray-100 flex items-center justify-center mb-8">
+                    <span class="text-3xl font-light text-gray-300">{{ member.first_name|first|upper }}</span>
+                </div>
+
+                <h1 class="text-3xl font-light tracking-tight text-gray-900 mb-2">
+                    {{ member.first_name }} <span class="font-medium">{{ member.last_name }}</span>
+                </h1>
+
+                <div class="mb-10">
+                    <span class="text-[10px] uppercase tracking-tighter px-2 py-0.5 border border-gray-200 text-gray-500 font-medium">
+                        {{ member.get_status_display }}
+                    </span>
+                </div>
+
+                <div class="space-y-8 border-t border-gray-50 pt-10">
+                    <div>
+                        <span class="block text-[10px] uppercase tracking-widest text-gray-400 mb-2">Contact</span>
+                        <p class="text-sm text-gray-800 font-light">{{ member.phone|default:"Non renseigné" }}</p>
+                    </div>
+                    <div>
+                        <span class="block text-[10px] uppercase tracking-widest text-gray-400 mb-2">Genre</span>
+                        <p class="text-sm text-gray-800 font-light">{{ member.get_genre_display }}</p>
+                    </div>
+                    <div>
+                        <span class="block text-[10px] uppercase tracking-widest text-gray-400 mb-2">Paroisse de rattachement</span>
+                        <p class="text-sm text-gray-800 font-light">{{ member.church.name }}</p>
+                    </div>
+                </div>
+                {% else %}
+                <div class="py-10">
+                    <h2 class="text-xl font-light text-gray-900 mb-4">Sélectionnez un membre</h2>
+                    <p class="text-sm text-gray-500 font-light">
+                        Utilisez le formulaire ci-contre pour créer une carte. Vous pouvez sélectionner un membre existant de votre église.
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="lg:col-span-8">
+            <h2 class="text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-8 pb-4 border-b border-gray-50">
+                {% if member %}Créer une carte pour {{ member.first_name }}{% else %}Formulaire de Carte{% endif %}
+            </h2>
+
+            <form method="post" class="space-y-8">
+                {% csrf_token %}
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="md:col-span-2">
+                        <label class="block text-[10px] uppercase tracking-widest text-gray-400 mb-2">
+                            {{ form.member.label }}
+                        </label>
+                        {{ form.member }}
+                        {% if form.member.errors %}
+                            <p class="text-xs text-red-500 mt-1">{{ form.member.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] uppercase tracking-widest text-gray-400 mb-2">
+                            {{ form.issue_date.label }}
+                        </label>
+                        {{ form.issue_date }}
+                        {% if form.issue_date.errors %}
+                            <p class="text-xs text-red-500 mt-1">{{ form.issue_date.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] uppercase tracking-widest text-gray-400 mb-2">
+                            {{ form.expiry_date.label }}
+                        </label>
+                        {{ form.expiry_date }}
+                        {% if form.expiry_date.errors %}
+                            <p class="text-xs text-red-500 mt-1">{{ form.expiry_date.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-[10px] uppercase tracking-widest text-gray-400 mb-2">
+                            {{ form.status.label }}
+                        </label>
+                        {{ form.status }}
+                        {% if form.status.errors %}
+                            <p class="text-xs text-red-500 mt-1">{{ form.status.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="pt-6 border-t border-gray-100 flex items-center gap-4">
+                    <button type="submit" class="px-8 py-3 bg-gray-900 text-white text-[10px] uppercase tracking-widest font-medium hover:bg-gray-800 transition-all">
+                        Créer la Carte
+                    </button>
+                    {% if member %}
+                    <a href="{% url 'member_detail' member.pk %}" class="text-[10px] uppercase tracking-widest text-gray-400 hover:text-gray-900 transition-colors">
+                        Annuler
+                    </a>
+                    {% else %}
+                    <a href="{% url 'member_list' %}" class="text-[10px] uppercase tracking-widest text-gray-400 hover:text-gray-900 transition-colors">
+                        Annuler
+                    </a>
+                    {% endif %}
+                </div>
+            </form>
+
+            {% if existing_cards %}
+            <div class="mt-16">
+                <h3 class="text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-6 pb-4 border-b border-gray-50">
+                    Cartes existantes
+                </h3>
+                <div class="space-y-0">
+                    {% for card in existing_cards %}
+                    <div class="group py-6 flex items-start justify-between border-b border-gray-50 hover:bg-gray-50/30 transition-all px-4 -mx-4">
+                        <div class="flex flex-col gap-1">
+                            <span class="text-sm font-medium text-gray-900">
+                                Carte {{ card.card_number }}
+                            </span>
+                            <span class="text-xs text-gray-400 font-light">
+                                Émise le {{ card.issue_date|date:"d M Y" }}
+                                {% if card.expiry_date %}
+                                • Expire le {{ card.expiry_date|date:"d M Y" }}
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="text-right">
+                            <span class="block text-sm text-gray-900 font-light">
+                                {% if card.status == 'ACTIVE' %}
+                                    <span class="text-[10px] uppercase tracking-tighter px-2 py-0.5 border border-green-200 text-green-600 font-medium">Active</span>
+                                {% elif card.status == 'EXPIRED' %}
+                                    <span class="text-[10px] uppercase tracking-tighter px-2 py-0.5 border border-red-200 text-red-600 font-medium">Expirée</span>
+                                {% else %}
+                                    <span class="text-[10px] uppercase tracking-tighter px-2 py-0.5 border border-gray-200 text-gray-600 font-medium">Perdue</span>
+                                {% endif %}
+                            </span>
+                            <span class="text-[10px] text-gray-300 uppercase tracking-tighter">Créée {{ card.created_at|timesince }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

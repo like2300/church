@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ member.first_name }} {{ member.last_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+    <div class="flex justify-between items-center mb-12 border-b border-gray-100 pb-6">
+        <a href="{% url 'member_list' %}" class="group flex items-center text-[10px] uppercase tracking-widest text-gray-400 hover:text-gray-900 transition-colors">
+            <svg class="w-4 h-4 mr-2 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            Retour à la liste
+        </a>
+        <a href="{% url 'attendance_create' %}?search={{ member.last_name }}" class="px-6 py-2 border border-gray-900 text-[10px] uppercase tracking-widest font-medium text-gray-900 hover:bg-gray-900 hover:text-white transition-all">
+            Noter une présence
+        </a>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-16">
+
+        <div class="lg:col-span-4">
+            <div class="sticky top-10">
+                <div class="w-24 h-24 bg-gray-50 border border-gray-100 flex items-center justify-center mb-8">
+                    <span class="text-3xl font-light text-gray-300">{{ member.first_name|first|upper }}</span>
+                </div>
+
+                <h1 class="text-3xl font-light tracking-tight text-gray-900 mb-2">
+                    {{ member.first_name }} <span class="font-medium">{{ member.last_name }}</span>
+                </h1>
+
+                <div class="mb-10">
+                    <span class="text-[10px] uppercase tracking-tighter px-2 py-0.5 border border-gray-200 text-gray-500 font-medium">
+                        {{ member.get_status_display }}
+                    </span>
+                </div>
+
+                <div class="space-y-8 border-t border-gray-50 pt-10">
+                    <div>
+                        <span class="block text-[10px] uppercase tracking-widest text-gray-400 mb-2">Contact</span>
+                        <p class="text-sm text-gray-800 font-light">{{ member.phone|default:"Non renseigné" }}</p>
+                    </div>
+                    <div>
+                        <span class="block text-[10px] uppercase tracking-widest text-gray-400 mb-2">Genre</span>
+                        <p class="text-sm text-gray-800 font-light">{{ member.get_genre_display }}</p>
+                    </div>
+                    <div>
+                        <span class="block text-[10px] uppercase tracking-widest text-gray-400 mb-2">Paroisse de rattachement</span>
+                        <p class="text-sm text-gray-800 font-light">{{ member.church.name }}</p>
+                    </div>
+                    <div>
+                        <span class="block text-[10px] uppercase tracking-widest text-gray-400 mb-2">Membre depuis le</span>
+                        <p class="text-sm text-gray-800 font-light">{{ member.date_joined|date:"d F Y" }}</p>
+                    </div>
+                </div>
+
+                <div class="mt-12 py-6 border-y border-gray-50 flex items-center justify-between">
+                    <span class="text-[10px] uppercase tracking-widest text-gray-400">Total présences</span>
+                    <span class="text-xl font-light text-gray-900">{{ attendances.count }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="lg:col-span-8">
+            <h2 class="text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-8 pb-4 border-b border-gray-50">Journal des activités</h2>
+
+            {% if attendances %}
+            <div class="space-y-0">
+                {% for attendance in attendances %}
+                <div class="group py-6 flex items-start justify-between border-b border-gray-50 hover:bg-gray-50/30 transition-all px-4 -mx-4">
+                    <div class="flex flex-col gap-1">
+                        <span class="text-sm font-medium text-gray-900">
+                            {{ attendance.culte_session.culte_type.name }}
+                        </span>
+                        <span class="text-xs text-gray-400 font-light italic">
+                            « {{ attendance.culte_session.theme|default:"Sans thème spécifique" }} »
+                        </span>
+                        {% if attendance.culte_session.officiant %}
+                        <span class="text-[10px] text-gray-400 mt-1 uppercase tracking-wide">Par {{ attendance.culte_session.officiant }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="text-right">
+                        <span class="block text-sm text-gray-900 font-light">{{ attendance.culte_session.date|date:"d M Y" }}</span>
+                        <span class="text-[10px] text-gray-300 uppercase tracking-tighter">Saisi à {{ attendance.recorded_at|date:"H:i" }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if is_paginated %}
+            <div class="mt-8 pt-6 border-t border-gray-100 flex items-center justify-between">
+                <div class="text-[10px] uppercase tracking-widest text-gray-400">
+                    Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}
+                </div>
+                <div class="flex items-center gap-2">
+                    {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}" class="px-4 py-2 text-[10px] uppercase tracking-widest text-gray-600 border border-gray-200 hover:border-gray-900 hover:text-gray-900 transition-all">
+                        Précédent
+                    </a>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                        <span class="px-4 py-2 text-[10px] uppercase tracking-widest bg-gray-900 text-white">{{ num }}</span>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <a href="?page={{ num }}" class="px-4 py-2 text-[10px] uppercase tracking-widest text-gray-600 border border-gray-200 hover:border-gray-900 hover:text-gray-900 transition-all">
+                            {{ num }}
+                        </a>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" class="px-4 py-2 text-[10px] uppercase tracking-widest text-gray-600 border border-gray-200 hover:border-gray-900 hover:text-gray-900 transition-all">
+                        Suivant
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% else %}
+            <div class="py-20 border border-dashed border-gray-200 text-center">
+                <p class="text-[11px] uppercase tracking-widest text-gray-300">Aucun enregistrement historique</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

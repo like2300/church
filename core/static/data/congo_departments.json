@@ -1,0 +1,127 @@
+{
+  "type": "FeatureCollection",
+  "name": "congo_departments",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Brazzaville",
+        "chef_lieu": "Brazzaville"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[15.2, -4.3], [15.3, -4.3], [15.3, -4.2], [15.2, -4.2], [15.2, -4.3]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Pointe-Noire",
+        "chef_lieu": "Pointe-Noire"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[11.8, -4.8], [11.9, -4.8], [11.9, -4.7], [11.8, -4.7], [11.8, -4.8]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Bouenza",
+        "chef_lieu": "Madingou"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[13.5, -4.2], [14.0, -4.2], [14.0, -3.8], [13.5, -3.8], [13.5, -4.2]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Niari",
+        "chef_lieu": "Dolisie"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[12.0, -4.5], [13.0, -4.5], [13.0, -3.5], [12.0, -3.5], [12.0, -4.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Lékoumou",
+        "chef_lieu": "Sibiti"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[13.0, -4.5], [14.0, -4.5], [14.0, -3.5], [13.0, -3.5], [13.0, -4.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Pool",
+        "chef_lieu": "Kinkala"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[14.5, -4.5], [15.5, -4.5], [15.5, -3.5], [14.5, -3.5], [14.5, -4.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Plateaux",
+        "chef_lieu": "Djambala"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[14.5, -3.5], [15.5, -3.5], [15.5, -2.0], [14.5, -2.0], [14.5, -3.5]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Cuvette",
+        "chef_lieu": "Owando"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[15.0, -2.0], [16.5, -2.0], [16.5, 0.0], [15.0, 0.0], [15.0, -2.0]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Cuvette-Ouest",
+        "chef_lieu": "Ewo"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[14.0, -1.0], [15.0, -1.0], [15.0, 0.5], [14.0, 0.5], [14.0, -1.0]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Sangha",
+        "chef_lieu": "Ouesso"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[14.5, 2.0], [16.5, 2.0], [16.5, 0.0], [14.5, 0.0], [14.5, 2.0]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Likouala",
+        "chef_lieu": "Impfondo"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[17.0, 2.5], [18.0, 2.5], [18.0, 0.5], [17.0, 0.5], [17.0, 2.5]]]
+      }
+    }
+  ]
+}
