@@ -1,0 +1,817 @@
+{% extends 'base.html' %}
+
+{% block title %}Rapport MDEVISP - {{ month_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+    <!-- En-tête avec effet moderne -->
+    <div class="relative bg-gradient-to-br from-blue-700 via-blue-600 to-purple-700 rounded-3xl p-10 mb-10 text-white shadow-2xl overflow-hidden">
+        <!-- Effet de fond -->
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-white rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2"></div>
+            <div class="absolute bottom-0 left-0 w-64 h-64 bg-white rounded-full blur-3xl transform -translate-x-1/2 translate-y-1/2"></div>
+        </div>
+        
+        <div class="relative z-10">
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center gap-6">
+                    <div class="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-lg">
+                        <i class="fas fa-chart-line text-4xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-4xl font-bold mb-3 tracking-tight">RAPPORT MDEVISP</h1>
+                        <p class="text-blue-100 text-lg">Système de Suivi des Cultes - Église Évangélique du Congo</p>
+                    </div>
+                </div>
+                <div class="text-right bg-white/10 backdrop-blur-sm rounded-2xl px-8 py-4 border border-white/20">
+                    <p class="text-sm text-blue-100 uppercase tracking-wider mb-1">Période</p>
+                    <p class="text-2xl font-bold">{{ month_name }}</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/15 transition-all">
+                    <div class="flex items-center gap-3 mb-2">
+                        <i class="fas fa-church text-blue-200"></i>
+                        <p class="text-xs text-blue-100 uppercase tracking-wider">Église</p>
+                    </div>
+                    <p class="font-semibold text-lg truncate">{{ user_church.name }}</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/15 transition-all">
+                    <div class="flex items-center gap-3 mb-2">
+                        <i class="fas fa-map-marker-alt text-blue-200"></i>
+                        <p class="text-xs text-blue-100 uppercase tracking-wider">Localisation</p>
+                    </div>
+                    <p class="font-semibold text-lg">{{ user_church.location.name|default:"N/A" }}</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/15 transition-all">
+                    <div class="flex items-center gap-3 mb-2">
+                        <i class="fas fa-users text-blue-200"></i>
+                        <p class="text-xs text-blue-100 uppercase tracking-wider">Effectif (Y)</p>
+                    </div>
+                    <p class="font-semibold text-lg">{{ effectif_total }}</p>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/15 transition-all">
+                    <div class="flex items-center gap-3 mb-2">
+                        <i class="fas fa-exclamation-triangle text-blue-200"></i>
+                        <p class="text-xs text-blue-100 uppercase tracking-wider">Seuil d'alerte</p>
+                    </div>
+                    <p class="font-semibold text-lg">{{ seuil_alerte }}%</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistiques principales avec cartes modernes -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="group relative bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/10 to-transparent rounded-bl-full"></div>
+            <div class="relative">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
+                        <i class="fas fa-sun text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-blue-500 uppercase tracking-wider">Cultes Matinaux</p>
+                        <p class="text-xs text-gray-400">(N)</p>
+                    </div>
+                </div>
+                <p class="text-5xl font-bold text-blue-600 mb-2">{{ cultes_matinaux }}</p>
+                <p class="text-sm text-gray-500">Sessions enregistrées</p>
+            </div>
+        </div>
+
+        <div class="group relative bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-500/10 to-transparent rounded-bl-full"></div>
+            <div class="relative">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/30">
+                        <i class="fas fa-cloud-moon text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-orange-500 uppercase tracking-wider">Cultes Vespéraux</p>
+                        <p class="text-xs text-gray-400">(M)</p>
+                    </div>
+                </div>
+                <p class="text-5xl font-bold text-orange-600 mb-2">{{ cultes_vesperaux }}</p>
+                <p class="text-sm text-gray-500">Sessions enregistrées</p>
+            </div>
+        </div>
+
+        <div class="group relative bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-500/10 to-transparent rounded-bl-full"></div>
+            <div class="relative">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/30">
+                        <i class="fas fa-church text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-purple-500 uppercase tracking-wider">Cultes Dominicaux</p>
+                        <p class="text-xs text-gray-400">(T)</p>
+                    </div>
+                </div>
+                <p class="text-5xl font-bold text-purple-600 mb-2">{{ cultes_dominicaux }}</p>
+                <p class="text-sm text-gray-500">Sessions enregistrées</p>
+            </div>
+        </div>
+
+        <div class="group relative bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 rounded-2xl p-6 shadow-2xl hover:shadow-3xl transition-all duration-300 overflow-hidden text-white">
+            <div class="absolute inset-0 bg-grid-white/10 [mask-image:linear-gradient(0deg,white,rgba(255,255,255,0.5))]"></div>
+            <div class="relative">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                        <i class="fas fa-calculator text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-bold text-white/90 uppercase tracking-wider">Total Général</p>
+                        <p class="text-xs text-white/70">X = N + M + T</p>
+                    </div>
+                </div>
+                <p class="text-5xl font-bold text-white mb-2">{{ total_cultes_actuel }}</p>
+                <p class="text-sm text-white/80">Somme des cultes</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pourcentage et tendance avec design moderne -->
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-xl p-8 mb-8">
+        <div class="flex items-center gap-3 mb-8">
+            <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30">
+                <i class="fas fa-chart-line text-white text-2xl"></i>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900">Indicateur de Participation</h2>
+                <p class="text-sm text-gray-500">Analyse détaillée des performances</p>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Pourcentage mensuel -->
+            <div class="relative group {% if alerte_seuil %}bg-gradient-to-br from-red-50 to-orange-50 border-2 border-red-200{% else %}bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200{% endif %} rounded-2xl p-8 text-center hover:shadow-xl transition-all duration-300">
+                <div class="absolute top-4 right-4">
+                    {% if alerte_seuil %}
+                        <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center animate-pulse">
+                            <i class="fas fa-exclamation-triangle text-red-600"></i>
+                        </div>
+                    {% else %}
+                        <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-check-circle text-green-600"></i>
+                        </div>
+                    {% endif %}
+                </div>
+                <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Pourcentage Mensuel</p>
+                <div class="flex items-center justify-center gap-4 mb-3">
+                    <p class="text-7xl font-bold {% if alerte_seuil %}text-red-600{% else %}text-green-600{% endif %}">{{ pourcentage_mensuel }}%</p>
+                </div>
+                <p class="text-xs text-gray-400 bg-white/50 rounded-lg py-2 px-3 inline-block">Formule : % = (X / Y) × 100</p>
+                {% if alerte_seuil %}
+                    <div class="mt-4 bg-red-100 border-l-4 border-red-500 p-4 rounded-r-lg text-left">
+                        <div class="flex items-start gap-3">
+                            <i class="fas fa-exclamation-triangle text-red-500 mt-1"></i>
+                            <div>
+                                <p class="font-bold text-red-800 text-sm">⚠️ Alerte : Pourcentage en dessous du seuil de {{ seuil_alerte }}% !</p>
+                                <p class="text-xs text-red-600 mt-1">Des actions correctives sont recommandées pour améliorer la participation.</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Mois précédent -->
+            <div class="bg-gradient-to-br from-gray-50 to-slate-50 rounded-2xl p-8 text-center border-2 border-gray-200 hover:shadow-xl transition-all duration-300">
+                <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Mois Précédent</p>
+                <p class="text-5xl font-bold text-gray-700 mb-4">{{ pourcentage_previous }}%</p>
+                <div class="flex items-center justify-center gap-3 bg-white rounded-xl py-3 px-4 inline-block shadow-sm">
+                    {% if tendance == 'hausse' %}
+                        <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                            <span class="text-green-600 font-bold text-xl">↑</span>
+                        </div>
+                        <div class="text-left">
+                            <p class="text-sm font-bold text-green-600">Hausse</p>
+                            <p class="text-xs text-gray-400">Positive</p>
+                        </div>
+                    {% elif tendance == 'baisse' %}
+                        <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                            <span class="text-red-600 font-bold text-xl">↓</span>
+                        </div>
+                        <div class="text-left">
+                            <p class="text-sm font-bold text-red-600">Baisse</p>
+                            <p class="text-xs text-gray-400">Négative</p>
+                        </div>
+                    {% else %}
+                        <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                            <span class="text-gray-600 font-bold text-xl">→</span>
+                        </div>
+                        <div class="text-left">
+                            <p class="text-sm font-bold text-gray-600">Stable</p>
+                            <p class="text-xs text-gray-400">Constant</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Évolution -->
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-8 text-center border-2 border-blue-200 hover:shadow-xl transition-all duration-300">
+                <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Évolution</p>
+                <div class="mb-4">
+                    <p class="text-6xl font-bold {% if evolution > 0 %}text-green-600{% elif evolution < 0 %}text-red-600{% else %}text-gray-600{% endif %}">
+                        {% if evolution > 0 %}+{% endif %}{{ evolution }}%
+                    </p>
+                </div>
+                <div class="bg-white rounded-xl py-3 px-4 inline-block shadow-sm">
+                    <p class="text-xs text-gray-400">Comparaison mois précédent</p>
+                    <p class="text-sm font-semibold text-gray-600 mt-1">
+                        {% if evolution > 0 %}
+                            <i class="fas fa-arrow-up text-green-500 mr-1"></i>Progression
+                        {% elif evolution < 0 %}
+                            <i class="fas fa-arrow-down text-red-500 mr-1"></i>Régression
+                        {% else %}
+                            <i class="fas fa-minus text-gray-500 mr-1"></i>Stable
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistiques par genre et statut avec design moderne -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <!-- Genre -->
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-xl p-8">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30">
+                    <i class="fas fa-users text-white text-2xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-gray-900">Répartition par Genre</h3>
+                    <p class="text-sm text-gray-500">Distribution démographique</p>
+                </div>
+            </div>
+            <div class="space-y-4">
+                <!-- Hommes -->
+                <div class="group flex items-center justify-between p-5 bg-gradient-to-r from-blue-50 to-blue-100/50 rounded-xl border border-blue-200 hover:shadow-lg hover:border-blue-300 transition-all duration-300">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all">
+                            <i class="fas fa-male text-blue-600 text-2xl"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-gray-900">Hommes</p>
+                            <p class="text-xs text-gray-500">Adultes masculins</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-3xl font-bold text-blue-600">{{ hommes }}</p>
+                        <p class="text-xs text-gray-400">membres</p>
+                    </div>
+                </div>
+
+                <!-- Femmes -->
+                <div class="group flex items-center justify-between p-5 bg-gradient-to-r from-pink-50 to-pink-100/50 rounded-xl border border-pink-200 hover:shadow-lg hover:border-pink-300 transition-all duration-300">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all">
+                            <i class="fas fa-female text-pink-600 text-2xl"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-gray-900">Femmes</p>
+                            <p class="text-xs text-gray-500">Adultes féminines</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-3xl font-bold text-pink-600">{{ femmes }}</p>
+                        <p class="text-xs text-gray-400">membres</p>
+                    </div>
+                </div>
+
+                <!-- Enfants -->
+                <div class="group flex items-center justify-between p-5 bg-gradient-to-r from-yellow-50 to-yellow-100/50 rounded-xl border border-yellow-200 hover:shadow-lg hover:border-yellow-300 transition-all duration-300">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all">
+                            <i class="fas fa-child text-yellow-600 text-2xl"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-gray-900">Enfants</p>
+                            <p class="text-xs text-gray-500">Moins de 18 ans</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-3xl font-bold text-yellow-600">{{ enfants }}</p>
+                        <p class="text-xs text-gray-400">membres</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statut -->
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-xl p-8">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/30">
+                    <i class="fas fa-user-check text-white text-2xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-gray-900">Statut des Membres</h3>
+                    <p class="text-sm text-gray-500">État et engagement</p>
+                </div>
+            </div>
+            <div class="space-y-4">
+                <!-- Membres Actifs -->
+                <div class="group flex items-center justify-between p-5 bg-gradient-to-r from-green-50 to-emerald-100/50 rounded-xl border border-green-200 hover:shadow-lg hover:border-green-300 transition-all duration-300">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all">
+                            <i class="fas fa-check-circle text-green-600 text-2xl"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-gray-900">Membres Actifs</p>
+                            <p class="text-xs text-gray-500">Réguliers et engagés</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-3xl font-bold text-green-600">{{ membres_actifs }}</p>
+                        <p class="text-xs text-gray-400">membres</p>
+                    </div>
+                </div>
+
+                <!-- Visiteurs -->
+                <div class="group flex items-center justify-between p-5 bg-gradient-to-r from-orange-50 to-orange-100/50 rounded-xl border border-orange-200 hover:shadow-lg hover:border-orange-300 transition-all duration-300">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all">
+                            <i class="fas fa-eye text-orange-600 text-2xl"></i>
+                        </div>
+                        <div>
+                            <p class="font-bold text-gray-900">Visiteurs</p>
+                            <p class="text-xs text-gray-500">Nouveaux ou occasionnels</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-3xl font-bold text-orange-600">{{ visiteurs }}</p>
+                        <p class="text-xs text-gray-400">personnes</p>
+                    </div>
+                </div>
+
+                <!-- Alertes Absence -->
+                <div class="group flex items-center justify-between p-5 bg-gradient-to-r from-red-50 to-red-100/50 rounded-xl border border-red-200 hover:shadow-lg hover:border-red-300 transition-all duration-300">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all relative">
+                            <i class="fas fa-exclamation-circle text-red-600 text-2xl"></i>
+                            {% if alertes_absence > 0 %}
+                                <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center animate-ping"></span>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <p class="font-bold text-gray-900">Alertes Absence</p>
+                            <p class="text-xs text-gray-500">> 30 jours sans présence</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-3xl font-bold text-red-600">{{ alertes_absence }}</p>
+                        <p class="text-xs text-gray-400">alertes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section Analyse et Commentaires -->
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-xl p-8 mb-8">
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-14 h-14 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                <i class="fas fa-file-contract text-white text-2xl"></i>
+            </div>
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900">Analyse Détaillée de la Période</h2>
+                <p class="text-sm text-gray-500">Rapport administratif complet</p>
+            </div>
+        </div>
+
+        <!-- Introduction -->
+        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 mb-6 border border-blue-200">
+            <h3 class="text-lg font-bold text-blue-900 mb-3 flex items-center gap-2">
+                <i class="fas fa-quote-left text-blue-500"></i>
+                Introduction
+            </h3>
+            <p class="text-gray-700 leading-relaxed text-justify">
+                Le présent rapport dresse le bilan des activités cultuelles de la paroisse <strong>{{ user_church.name }}</strong>, 
+                située à <strong>{{ user_church.location.name|default:"une localité non spécifiée" }}</strong>, 
+                pour la période de <strong>{{ month_name }}</strong>. Ce document administratif a pour objectif de présenter 
+                de manière exhaustive les statistiques de fréquentation des différents cultes, d'analyser les tendances de 
+                participation des fidèles, et de formuler des recommandations pour l'amélioration continue des activités spirituelles.
+            </p>
+        </div>
+
+        <!-- Section 1 : Synthèse des cultes -->
+        <div class="mb-6">
+            <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <i class="fas fa-church text-blue-500"></i>
+                1. Synthèse des Célébrations Cultuelles
+            </h3>
+            <p class="text-gray-700 leading-relaxed text-justify mb-4">
+                Au cours de la période sous revue, un total de <strong class="text-blue-600 font-bold">{{ total_cultes_actuel }} cultes</strong> a été organisé et célébré 
+                dans l'enceinte de notre paroisse. Ce chiffre se décompose comme suit :
+            </p>
+            <ul class="space-y-3 ml-4">
+                <li class="flex items-start gap-3 p-3 bg-blue-50 rounded-lg border border-blue-100">
+                    <span class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">☀️</span>
+                    <div>
+                        <p class="text-gray-700">
+                            <strong>{{ cultes_matinaux }} cultes matinaux</strong> ont été tenus, représentant les célébrations organisées 
+                            en matinée pour l'édification des fidèles souhaitant commencer leur journée sous la bénédiction divine.
+                        </p>
+                    </div>
+                </li>
+                <li class="flex items-start gap-3 p-3 bg-orange-50 rounded-lg border border-orange-100">
+                    <span class="flex-shrink-0 w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-600 font-bold">🌙</span>
+                    <div>
+                        <p class="text-gray-700">
+                            <strong>{{ cultes_vesperaux }} cultes vespéraux</strong> ont rythmé les soirées de nos fidèles, offrant un 
+                            temps de recueillement et de prière après les activités quotidiennes.
+                        </p>
+                    </div>
+                </li>
+                <li class="flex items-start gap-3 p-3 bg-purple-50 rounded-lg border border-purple-100">
+                    <span class="flex-shrink-0 w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 font-bold">⛪</span>
+                    <div>
+                        <p class="text-gray-700">
+                            <strong>{{ cultes_dominicaux }} cultes dominicaux</strong> ont marqué les dimanches de cette période, 
+                            constituant le temps fort de la vie communautaire et spirituelle de notre église.
+                        </p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Section 2 : Analyse de la participation -->
+        <div class="mb-6">
+            <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <i class="fas fa-chart-line text-green-500"></i>
+                2. Analyse de la Participation des Fidèles
+            </h3>
+            <p class="text-gray-700 leading-relaxed text-justify mb-4">
+                Le taux de participation moyen calculé pour la période est de <strong class="{% if pourcentage_mensuel >= 60 %}text-green-600{% elif pourcentage_mensuel >= 40 %}text-orange-600{% else %}text-red-600{% endif %} font-bold text-xl">{{ pourcentage_mensuel }}%</strong>. 
+                Ce pourcentage est obtenu en appliquant la formule officielle MDEVISP : <em class="bg-gray-100 px-2 py-1 rounded">(X / Y) × 100</em>, 
+                où X représente le nombre total de cultes et Y l'effectif des membres actifs.
+            </p>
+            
+            {% if pourcentage_mensuel >= 60 %}
+            <div class="bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 p-5 rounded-r-xl">
+                <div class="flex items-start gap-3">
+                    <i class="fas fa-thumbs-up text-green-600 text-2xl mt-1"></i>
+                    <div>
+                        <h4 class="font-bold text-green-900 mb-2">Appréciation : Très Satisfaisant</h4>
+                        <p class="text-gray-700 leading-relaxed">
+                            Le taux de participation de <strong>{{ pourcentage_mensuel }}%</strong> témoigne d'un <strong>engagement remarquable</strong> 
+                            des fidèles dans la vie spirituelle de la paroisse. Cette performance exceptionnelle reflète une communauté 
+                            dynamique, assidue et profondément attachée aux valeurs de foi et de communion fraternelle. Les responsables 
+                            pastoraux sont encouragés à maintenir cette dynamique positive par des célébrations de qualité et un 
+                            accompagnement spirituel soutenu.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% elif pourcentage_mensuel >= 40 %}
+            <div class="bg-gradient-to-r from-orange-50 to-amber-50 border-l-4 border-orange-500 p-5 rounded-r-xl">
+                <div class="flex items-start gap-3">
+                    <i class="fas fa-exclamation-circle text-orange-600 text-2xl mt-1"></i>
+                    <div>
+                        <h4 class="font-bold text-orange-900 mb-2">Appréciation : Satisfaisant (À Améliorer)</h4>
+                        <p class="text-gray-700 leading-relaxed">
+                            Le taux de participation de <strong>{{ pourcentage_mensuel }}%</strong> indique une <strong>fréquentation correcte</strong> 
+                            mais perfectible des cultes. Bien que la situation ne soit pas alarmante, elle révèle un potentiel de progression 
+                            significatif. Il est recommandé aux responsables de la paroisse d'identifier les facteurs limitants 
+                            (horaires, thématiques, communication) et de mettre en place des actions ciblées pour stimuler 
+                            l'assiduité des fidèles.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="bg-gradient-to-r from-red-50 to-rose-50 border-l-4 border-red-500 p-5 rounded-r-xl">
+                <div class="flex items-start gap-3">
+                    <i class="fas fa-exclamation-triangle text-red-600 text-2xl mt-1"></i>
+                    <div>
+                        <h4 class="font-bold text-red-900 mb-2">Appréciation : Insuffisant - Action Requise</h4>
+                        <p class="text-gray-700 leading-relaxed mb-3">
+                            Le taux de participation de <strong>{{ pourcentage_mensuel }}%</strong> est <strong>en deçà du seuil minimal requis de 40%</strong>. 
+                            Cette situation préoccupante nécessite une <strong>intervention immédiate</strong> des responsables pastoraux 
+                            et administratifs de la paroisse.
+                        </p>
+                        <h5 class="font-bold text-red-800 mb-2">Recommandations urgentes :</h5>
+                        <ul class="space-y-2 text-gray-700">
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-arrow-right text-red-500 mt-1"></i>
+                                <span>Organiser une réunion d'urgence avec le conseil pastoral pour identifier les causes de cette faible participation</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-arrow-right text-red-500 mt-1"></i>
+                                <span>Mettre en place un système de rappel et d'invitation personnalisé pour les membres inactifs</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-arrow-right text-red-500 mt-1"></i>
+                                <span>Adapter les horaires et thématiques des cultes aux besoins réels des fidèles</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i class="fas fa-arrow-right text-red-500 mt-1"></i>
+                                <span>Renforcer la communication digitale (WhatsApp, réseaux sociaux) pour annoncer les cultes</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Section 3 : Comparaison avec le mois précédent -->
+        <div class="mb-6">
+            <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <i class="fas fa-balance-scale text-purple-500"></i>
+                3. Analyse Comparative : Évolution par rapport au Mois Précédent
+            </h3>
+            <p class="text-gray-700 leading-relaxed text-justify mb-4">
+                La comparaison des performances entre le mois sous revue et le mois précédent révèle une évolution de 
+                <strong class="{% if evolution > 0 %}text-green-600{% elif evolution < 0 %}text-red-600{% else %}text-gray-600{% endif %} font-bold">
+                    {% if evolution > 0 %}+{% endif %}{{ evolution }}%
+                </strong>. 
+                Le mois précédent affichait un taux de <strong>{{ pourcentage_previous }}%</strong>, tandis que le mois actuel enregistre 
+                <strong>{{ pourcentage_mensuel }}%</strong>.
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {% if tendance == 'hausse' %}
+                <div class="md:col-span-3 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl p-5">
+                    <div class="flex items-center gap-3 mb-3">
+                        <i class="fas fa-arrow-trend-up text-green-600 text-3xl"></i>
+                        <h4 class="font-bold text-green-900 text-lg">Tendance : Hausse de la Participation</h4>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed">
+                        Cette <strong>progression positive de {{ evolution }}%</strong> démontre l'efficacité des actions menées 
+                        par les responsables de la paroisse. Elle traduit un <strong>regain d'intérêt</strong> des fidèles pour 
+                        les activités spirituelles et une dynamique communautaire en croissance. Il convient de <strong>poursuivre 
+                        et d'amplifier</strong> les initiatives qui ont porté leurs fruits (thématiques engageantes, prédications 
+                        de qualité, accueil chaleureux, etc.).
+                    </p>
+                </div>
+                {% elif tendance == 'baisse' %}
+                <div class="md:col-span-3 bg-gradient-to-r from-red-50 to-rose-50 border-2 border-red-200 rounded-xl p-5">
+                    <div class="flex items-center gap-3 mb-3">
+                        <i class="fas fa-arrow-trend-down text-red-600 text-3xl"></i>
+                        <h4 class="font-bold text-red-900 text-lg">Tendance : Baisse de la Participation</h4>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed">
+                        Cette <strong>régression de {{ evolution }}%</strong> constitue un <strong>signal d'alerte</strong> qui 
+                        mérite une attention particulière. Plusieurs facteurs peuvent expliquer cette baisse : lassitude des 
+                        fidèles, problèmes d'organisation, concurrence d'autres activités, ou contexte socio-économique difficile. 
+                        Une <strong>enquête approfondie</strong> auprès des membres est recommandée pour identifier les causes 
+                        précises et y remédier.
+                    </p>
+                </div>
+                {% else %}
+                <div class="md:col-span-3 bg-gradient-to-r from-gray-50 to-slate-50 border-2 border-gray-200 rounded-xl p-5">
+                    <div class="flex items-center gap-3 mb-3">
+                        <i class="fas fa-arrows-left-right text-gray-600 text-3xl"></i>
+                        <h4 class="font-bold text-gray-900 text-lg">Tendance : Stabilité de la Participation</h4>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed">
+                        La <strong>stabilité du taux de participation</strong> indique une communauté fidèle mais sans croissance 
+                        significative. Cette situation, bien que rassurante, appelle à une <strong>réflexion stratégique</strong> 
+                        pour dynamiser la vie spirituelle et attirer de nouveaux membres. Des innovations dans le format des cultes, 
+                        des thématiques plus engageantes, ou des événements spéciaux pourraient stimuler l'enthousiasme collectif.
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Section 4 : Démographie des fidèles -->
+        <div class="mb-6">
+            <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <i class="fas fa-users text-blue-500"></i>
+                4. Analyse Démographique de l'Assemblée
+            </h3>
+            <p class="text-gray-700 leading-relaxed text-justify mb-4">
+                La composition démographique de la paroisse révèle une répartition par genre et par statut qui offre des 
+                enseignements précieux pour l'adaptation des ministères et des programmes pastoraux.
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Genre -->
+                <div class="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-5">
+                    <h4 class="font-bold text-blue-900 mb-3 flex items-center gap-2">
+                        <i class="fas fa-venus-mars text-blue-600"></i>
+                        Répartition par Genre
+                    </h4>
+                    <ul class="space-y-3 text-gray-700">
+                        <li class="flex justify-between items-center p-3 bg-white rounded-lg">
+                            <span><i class="fas fa-male text-blue-500 mr-2"></i>Hommes</span>
+                            <span class="font-bold text-blue-600 text-lg">{{ hommes }} <span class="text-sm text-gray-400">({{ pct_hommes|default:"0" }}%)</span></span>
+                        </li>
+                        <li class="flex justify-between items-center p-3 bg-white rounded-lg">
+                            <span><i class="fas fa-female text-pink-500 mr-2"></i>Femmes</span>
+                            <span class="font-bold text-pink-600 text-lg">{{ femmes }} <span class="text-sm text-gray-400">({{ pct_femmes|default:"0" }}%)</span></span>
+                        </li>
+                        <li class="flex justify-between items-center p-3 bg-white rounded-lg">
+                            <span><i class="fas fa-child text-yellow-500 mr-2"></i>Enfants</span>
+                            <span class="font-bold text-yellow-600 text-lg">{{ enfants }} <span class="text-sm text-gray-400">({{ pct_enfants|default:"0" }}%)</span></span>
+                        </li>
+                    </ul>
+                    <p class="text-gray-600 text-sm mt-4 italic">
+                        <strong>Analyse :</strong> La paroisse compte un total de <strong>{{ total_members }} membres</strong>, 
+                        dont la répartition par genre montre une diversité qui enrichit la vie communautaire.
+                    </p>
+                </div>
+
+                <!-- Statut -->
+                <div class="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-xl p-5">
+                    <h4 class="font-bold text-green-900 mb-3 flex items-center gap-2">
+                        <i class="fas fa-user-tag text-green-600"></i>
+                        Répartition par Statut
+                    </h4>
+                    <ul class="space-y-3 text-gray-700">
+                        <li class="flex justify-between items-center p-3 bg-white rounded-lg">
+                            <span><i class="fas fa-check-circle text-green-500 mr-2"></i>Membres Actifs</span>
+                            <span class="font-bold text-green-600 text-lg">{{ membres_actifs }}</span>
+                        </li>
+                        <li class="flex justify-between items-center p-3 bg-white rounded-lg">
+                            <span><i class="fas fa-eye text-orange-500 mr-2"></i>Visiteurs</span>
+                            <span class="font-bold text-orange-600 text-lg">{{ visiteurs }}</span>
+                        </li>
+                        <li class="flex justify-between items-center p-3 bg-white rounded-lg">
+                            <span><i class="fas fa-exclamation-circle text-red-500 mr-2"></i>Alertes Absence</span>
+                            <span class="font-bold text-red-600 text-lg">{{ alertes_absence }}</span>
+                        </li>
+                    </ul>
+                    <p class="text-gray-600 text-sm mt-4 italic">
+                        <strong>Analyse :</strong> La présence de <strong>{{ alertes_absence }} membres absents</strong> depuis 
+                        plus de 30 jours nécessite un <strong>suivi pastoral personnalisé</strong> pour comprendre les raisons 
+                        de leur éloignement et faciliter leur retour.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 5 : Recommandations -->
+        <div class="mb-6">
+            <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <i class="fas fa-clipboard-check text-indigo-500"></i>
+                5. Recommandations et Perspectives
+            </h3>
+            <p class="text-gray-700 leading-relaxed text-justify mb-4">
+                Au terme de cette analyse, les recommandations suivantes sont formulées à l'attention des responsables de la 
+                paroisse pour optimiser la participation et dynamiser la vie spirituelle :
+            </p>
+            
+            <div class="space-y-3">
+                <div class="flex items-start gap-3 p-4 bg-indigo-50 border border-indigo-200 rounded-xl">
+                    <span class="flex-shrink-0 w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-bold">1</span>
+                    <p class="text-gray-700 pt-1">
+                        <strong>Renforcer la communication digitale :</strong> Utiliser les réseaux sociaux, WhatsApp et SMS 
+                        pour rappeler les horaires de cultes et partager les thèmes de la semaine.
+                    </p>
+                </div>
+                <div class="flex items-start gap-3 p-4 bg-indigo-50 border border-indigo-200 rounded-xl">
+                    <span class="flex-shrink-0 w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-bold">2</span>
+                    <p class="text-gray-700 pt-1">
+                        <strong>Visiter les membres absents :</strong> Organiser des visites pastorales auprès des 
+                        <strong>{{ alertes_absence }} membres signalés absents</strong> pour les encourager et comprendre 
+                        leurs difficultés.
+                    </p>
+                </div>
+                <div class="flex items-start gap-3 p-4 bg-indigo-50 border border-indigo-200 rounded-xl">
+                    <span class="flex-shrink-0 w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-bold">3</span>
+                    <p class="text-gray-700 pt-1">
+                        <strong>Adapter les horaires et formats :</strong> Évaluer la pertinence des horaires actuels et 
+                        envisager des formats innovants (cultes thématiques, témoignages, adorations prolongées).
+                    </p>
+                </div>
+                <div class="flex items-start gap-3 p-4 bg-indigo-50 border border-indigo-200 rounded-xl">
+                    <span class="flex-shrink-0 w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-bold">4</span>
+                    <p class="text-gray-700 pt-1">
+                        <strong>Impliquer les jeunes et les enfants :</strong> Créer des ministères spécifiques pour 
+                        les <strong>{{ enfants }} enfants</strong> et les jeunes afin de les intégrer activement dans 
+                        la vie de l'église.
+                    </p>
+                </div>
+                <div class="flex items-start gap-3 p-4 bg-indigo-50 border border-indigo-200 rounded-xl">
+                    <span class="flex-shrink-0 w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-bold">5</span>
+                    <p class="text-gray-700 pt-1">
+                        <strong>Organiser des événements spéciaux :</strong> Programmer des journées thématiques, des 
+                        conférences bibliques ou des retraites spirituelles pour raviver la ferveur des fidèles.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conclusion -->
+        <div class="bg-gradient-to-r from-gray-50 to-slate-50 border-l-4 border-gray-500 p-6 rounded-r-xl">
+            <h4 class="font-bold text-gray-900 mb-3 flex items-center gap-2">
+                <i class="fas fa-flag-checkered text-gray-600"></i>
+                Conclusion Générale
+            </h4>
+            <p class="text-gray-700 leading-relaxed text-justify">
+                En définitive, le rapport de la période de <strong>{{ month_name }}</strong> présente un tableau contrasté 
+                de la vie spirituelle de la paroisse <strong>{{ user_church.name }}</strong>. Avec un taux de participation 
+                de <strong class="{% if pourcentage_mensuel >= 60 %}text-green-600{% elif pourcentage_mensuel >= 40 %}text-orange-600{% else %}text-red-600{% endif %}">{{ pourcentage_mensuel }}%</strong>, 
+                la communauté montre des signes de vitalité mais aussi des marges de progression significatives. La mise en 
+                œuvre rigoureuse des recommandations formulées ci-dessus permettra d'améliorer l'assiduité des fidèles et 
+                de renforcer la cohésion communautaire. Le siège MDEVISP reste à l'écoute pour accompagner la paroisse dans 
+                cette démarche d'amélioration continue.
+            </p>
+            <p class="text-gray-600 text-sm mt-4 italic text-right">
+                <em>"La diligence mène à l'abondance." - Proverbes 21:5</em>
+            </p>
+        </div>
+    </div>
+
+    <!-- Boutons d'action modernes -->
+    <div class="flex flex-wrap gap-4 mb-8">
+        <a href="{% url 'mdevisp_export_docx' %}?year={{ year }}&month={{ month }}"
+           class="group flex-1 md:flex-none px-8 py-4 bg-gradient-to-r from-green-600 to-green-500 text-white font-bold rounded-xl hover:shadow-2xl hover:shadow-green-500/40 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-3">
+            <i class="fas fa-file-word text-xl group-hover:scale-110 transition-transform"></i>
+            <div class="text-left">
+                <p class="text-xs opacity-80">Exporter en</p>
+                <p class="text-lg">DOCX</p>
+            </div>
+        </a>
+        <a href="{% url 'mdevisp_report' %}?year={{ previous_year }}&month={{ previous_month }}"
+           class="group flex-1 md:flex-none px-8 py-4 bg-white border-2 border-gray-300 text-gray-700 font-bold rounded-xl hover:bg-gray-50 hover:border-gray-400 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-3">
+            <i class="fas fa-arrow-left text-xl group-hover:-translate-x-1 transition-transform"></i>
+            <div class="text-left">
+                <p class="text-xs text-gray-500">Naviguer vers</p>
+                <p class="text-lg">Mois précédent</p>
+            </div>
+        </a>
+        <a href="{% url 'mdevisp_report' %}?year={{ next_year }}&month={{ next_month }}"
+           class="group flex-1 md:flex-none px-8 py-4 bg-white border-2 border-gray-300 text-gray-700 font-bold rounded-xl hover:bg-gray-50 hover:border-gray-400 hover:shadow-xl hover:translate-x-1 transition-all duration-300 flex items-center justify-center gap-3">
+            <div class="text-right">
+                <p class="text-xs text-gray-500">Naviguer vers</p>
+                <p class="text-lg">Mois suivant</p>
+            </div>
+            <i class="fas fa-arrow-right text-xl group-hover:translate-x-1 transition-transform"></i>
+        </a>
+        <a href="{% url 'mdevisp_annual' %}?year={{ year }}"
+           class="group flex-1 md:flex-none px-8 py-4 bg-gradient-to-r from-purple-600 to-purple-500 text-white font-bold rounded-xl hover:shadow-2xl hover:shadow-purple-500/40 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-3">
+            <i class="fas fa-calendar-alt text-xl group-hover:rotate-12 transition-transform"></i>
+            <div class="text-left">
+                <p class="text-xs opacity-80">Voir le</p>
+                <p class="text-lg">Rapport Annuel</p>
+            </div>
+        </a>
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<script>
+    const monthlyData = {{ monthly_data|safe }};
+    
+    new Chart(document.getElementById('chart-evolution'), {
+        type: 'line',
+        data: {
+            labels: monthlyData.map(d => d.month),
+            datasets: [{
+                label: 'Taux de participation (%)',
+                data: monthlyData.map(d => d.percentage),
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: '#3b82f6',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 6,
+                pointHoverRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(17, 24, 39, 0.9)',
+                    padding: 12,
+                    titleFont: { size: 13, weight: 'bold' },
+                    bodyFont: { size: 12 },
+                    cornerRadius: 8,
+                    callbacks: {
+                        label: function(context) {
+                            return context.parsed.y + '%';
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    grid: { color: '#f3f4f6' },
+                    ticks: { callback: value => value + '%' }
+                },
+                x: {
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

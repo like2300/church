@@ -24,4 +24,9 @@ urlpatterns = [
     path('report/generate/', views.report_generate, name='report_generate'),
     path('report/export/pdf/', views.report_export_pdf, name='report_export_pdf'),
     path('report/export/docx/', views.report_export_docx, name='report_export_docx'),
+    
+    # Rapports MDEVISP
+    path('mdevisp/', views.mdevisp_report, name='mdevisp_report'),
+    path('mdevisp/annual/', views.mdevisp_annual_report, name='mdevisp_annual'),
+    path('mdevisp/export/', views.mdevisp_export_docx, name='mdevisp_export_docx'),
 ]

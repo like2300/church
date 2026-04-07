@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>D'avant Croissance - Connexion</title>
+    <title>Dhavant Croissance - Connexion</title>
     <link rel="stylesheet" href="{% static 'leaflet/leaflet.css' %}" />
     <style>
         :root {
@@ -170,15 +170,15 @@
             animation: slideOut 0.3s ease-out forwards;
         }
 
-        /* Custom popup styling */
+        /* Custom popup styling - white theme for map */
         .leaflet-popup-content-wrapper {
-            background: #0f172a;
-            color: white;
+            background: white;
+            color: #1e293b;
             border-radius: 8px;
-            border: 1px solid var(--primary);
+            border: 1px solid #e2e8f0;
         }
         .leaflet-popup-tip {
-            background: #0f172a;
+            background: white;
         }
         .leaflet-popup-content {
             margin: 12px;
@@ -195,7 +195,7 @@
 <div class="login-container">
     <div class="login-form-section">
         <div class="logo-container">
-            <div class="logo">D'AVANT</div>
+            <div class="logo">DHAVANT</div>
             <div class="app-name">CROISSANCE</div>
         </div>
 
@@ -320,10 +320,9 @@
 
         console.log('Map initialized at zoom level:', map.getZoom());
 
-        // Dark map tiles (CartoDB Dark Matter)
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            attribution: '©OpenStreetMap ©CartoDB',
-            subdomains: 'abcd',
+        // Light/white map tiles (OpenStreetMap standard tiles)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '©OpenStreetMap contributors',
             maxZoom: 16
         }).addTo(map);
 
