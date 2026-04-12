@@ -3,7 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Dhavant Croissance{% endblock %}</title>
+    
+    <!-- SEO Meta Tags -->
+    <title>{% block title %}Dhavant Croissance - Système de Gestion d'Église{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}Application de gestion d'église - Suivi des membres, présences, cultes et statistiques. République du Congo.{% endblock %}">
+    <meta name="keywords" content="{% block meta_keywords %}église, gestion église, membres église, présence culte, gestion paroissiale, Congo Brazzaville, church management{% endblock %}">
+    <meta name="author" content="Dhavant Croissance">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="French">
+    
+    <!-- Google Site Verification -->
+    <meta name="google-site-verification" content="sHiyHJvUUS51Epq9nfXGEikXCVJz5Bi1cHGZ1k3g-tY" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{% block og_url %}https://dhavant.alwaysdata.net/{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}Dhavant Croissance - Système de Gestion d'Église{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Application de gestion d'église - Suivi des membres, présences, cultes et statistiques{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{% static 'images/og-image.jpg' %}{% endblock %}">
+    <meta property="og:locale" content="fr_FR">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{% block twitter_url %}https://dhavant.alwaysdata.net/{% endblock %}">
+    <meta property="twitter:title" content="{% block twitter_title %}Dhavant Croissance - Système de Gestion d'Église{% endblock %}">
+    <meta property="twitter:description" content="{% block twitter_description %}Application de gestion d'église - Suivi des membres, présences, cultes et statistiques{% endblock %}">
+    <meta property="twitter:image" content="{% block twitter_image %}{% static 'images/twitter-image.jpg' %}{% endblock %}">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
+    <link rel="apple-touch-icon" href="{% static 'images/apple-touch-icon.png' %}">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
     {% load static %}
 
     <!-- Tailwind CSS CDN -->
@@ -84,13 +116,13 @@
                         <span class="ml-3 font-medium">Tableau de bord</span>
                     </a>
                     {% endif %}
-                    
+
                     <!-- Membres - Tous -->
                     <a href="{% url 'member_list' %}" class="nav-link flex items-center p-3 text-gray-100 rounded-lg group {% if 'member' in request.resolver_match.url_name %}active{% endif %}">
                         <i class="fas fa-users w-6"></i>
                         <span class="ml-3 font-medium">Membres</span>
                     </a>
-                    
+
                     <!-- Présences - Tous -->
                     <a href="{% url 'attendance_create' %}" class="nav-link flex items-center p-3 text-gray-100 rounded-lg group {% if 'attendance' in request.resolver_match.url_name %}active{% endif %}">
                         <i class="fas fa-calendar-check w-6"></i>
